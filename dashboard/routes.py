@@ -464,7 +464,6 @@ def analytics():
     )
 
 # ========================= DELETE ANALYTICS==========================
-
 @dashboard_bp.route('/delete_session/<int:session_id>', methods=['POST'])
 def delete_session(session_id):
 
@@ -481,12 +480,10 @@ def delete_session(session_id):
     db.session.delete(study_session)
     db.session.commit()
 
-
     remaining_sessions = StudySession.query.filter_by(
         user_id=session["user_id"],
         day_number=deleted_day
     ).count()
-
 
     if remaining_sessions == 0:
 
