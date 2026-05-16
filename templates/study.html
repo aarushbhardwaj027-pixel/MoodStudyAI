@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Your Study Plan</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/study.css') }}">
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav>
+        <b>Moody Study AI</b>
+
+        <div>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/dashboard/progress">Progress</a>
+            <a href="/auth/logout">Logout</a>
+        </div>
+    </nav>
+
+    <!-- ================= TITLE ================= -->
+
+    <h2>Your Study Plan 📚</h2>
+
+    <div class="container">
+
+        {% if plans and plans|length > 0 %}
+
+        {% for p in plans %}
+
+        <div class="study-card">
+
+            <!-- LEFT INFO -->
+
+            <div class="study-info">
+
+                <h3>
+                    {% if p.status == "done" %}
+                    ✅
+                    {% else %}
+                    📘
+                    {% endif %}
+
+                    Day {{ p.day_number }}
+                </h3>
+
+                <div class="topics-list">
+
+                    {% for topic in p.topics %}
+
+                    <div class="topic-item">
+                        ☑ {{ topic }}
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT BUTTON -->
+
+            {% if mode == "study" %}
+
+            <div class="study-action">
+
+                {% if p.status == "done" %}
+
+                <a href="/dashboard/mood/{{ p.day_number }}">
+                    <button>🔁 Revise</button>
+                </a>
+
+                {% else %}
+
+                <a href="/dashboard/mood/{{ p.day_number }}">
+                    <button>▶ Start Studying</button>
+                </a>
+
+                {% endif %}
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        {% endfor %}
+
+        <!-- DELETE BUTTON -->
+
+        <form action="/dashboard/delete_plan" method="POST" class="delete-form">
+
+            <button type="submit">
+                Delete Entire Plan 🗑️
+            </button>
+
+        </form>
+
+        {% else %}
+
+        <p class="empty-text">
+            No study plan found. Upload syllabus first.
+        </p>
+
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>

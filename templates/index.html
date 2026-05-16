@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Moody Study AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <b>Moody Study AI</b>
+
+    <div>
+        <a href="/">Home</a>
+        <a href="/auth/login">Login</a>
+        <a href="/auth/signup">Signup</a>
+    </div>
+</nav>
+
+<hr>
+
+<!-- HERO SECTION -->
+<div class="hero">
+
+    <div class="hero-text">
+
+        <h1>Study smarter with AI that understands your mood</h1>
+
+        <p>
+            Plan your studies, track your focus, and adapt your learning style
+            based on how you feel every day.
+        </p>
+
+        <a href="/auth/login">
+            <button>Get Started</button>
+        </a>
+
+    </div>
+
+    <div class="hero-image">
+
+        <img src="{{ url_for('static', filename='images/hero.jpeg') }}" alt="Study AI">
+
+    </div>
+
+</div>
+
+</body>
+</html>

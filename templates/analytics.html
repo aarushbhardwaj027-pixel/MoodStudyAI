@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Study Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/analytics.css') }}">
+</head>
+
+<body>
+
+    <div class="navbar">
+        <div>
+            <b>Mood Study AI</b>
+        </div>
+
+        <div>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/dashboard/progress">Progress</a>
+            <a href="/auth/logout">Logout</a>
+        </div>
+    </div>
+
+
+    <h1>🧠 Study Intelligence Dashboard</h1>
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="big">{{ best_mood }}</div>
+            <div class="label">Most Productive Mood</div>
+            <div class="label">Avg Focus: {{ best_avg }}%</div>
+        </div>
+
+        <div class="card">
+            <div class="big">{{ (max_streak / 60)|round(1) }} min</div>
+            <div class="label">Max Continuous Focus Time (minutes)</div>
+        </div>
+
+        <div class="card">
+            <div class="big">{{ total_pauses }}</div>
+            <div class="label">Total Pauses</div>
+        </div>
+
+        <div class="card">
+            <div class="big">{{ total_pause_time }} sec</div>
+            <div class="label">Total Pause Time</div>
+        </div>
+
+        <div class="card">
+            <div class="big">{{ avg_focus }}%</div>
+            <div class="label">Average Focus Score</div>
+        </div>
+
+    </div>
+
+    <!-- GRAPH -->
+    <div class="card" style="margin-top:20px;">
+        <h3>📈 Focus Trend</h3>
+        <div class="chart-container">
+            <canvas id="focusChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+        <h3>📅 Daily Breakdown</h3>
+
+        <div class="day-grid">
+
+            {% for s in sessions %}
+
+            <div class="day-box">
+
+                <h4>Day {{ s.day_number }}</h4>
+
+                <p>👱 Mood: {{ s.mood }}</p>
+                <p>🎯 Focus: {{ s.focus_score }}%</p>
+                <p>🔥 Max Focus: {{ (s.max_streak / 60) | round(1) }} min</p>
+                <p>⏸ Pauses: {{ s.pause_count }}</p>
+                <p>⏱ Pause Time: {{ s.total_pause_time }} sec</p>
+
+                <form action="/dashboard/delete_session/{{ s.id }}" method="POST">
+
+                    <button type="submit" class="delete-btn">
+                        Delete Session
+                    </button>
+
+                </form>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+    </div>
+
+    <!-- BACK -->
+    <div class="back">
+        <a href="/dashboard">
+            <button>⬅ Back to Dashboard</button>
+        </a>
+    </div>
+
+    <script>
+        let progress = {{ plans_data | tojson | safe }};
+
+        // safety fallback
+        if (!progress) {
+            progress = [];
+        }
+
+        let days = progress.map(p => Number(p.day));
+        let scores = progress.map(p => Number(p.focus_score));
+
+        const ctx = document.getElementById("focusChart").getContext("2d");
+
+        new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: days,
+                datasets: [{
+                    label: "Focus %",
+                    data: scores,
+                    borderColor: "#6366f1",
+                    backgroundColor: "rgba(99,102,241,0.2)",
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>

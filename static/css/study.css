@@ -1,0 +1,198 @@
+/* ================= BASE ================= */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    transition:all 0.2s ease;
+}
+
+body{
+    font-family:"Segoe UI", Arial, sans-serif;
+    min-height:100vh;
+    background:#f6f7fb;
+    color:#1f2937;
+}
+
+/* ================= NAVBAR ================= */
+nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:16px 50px;
+    background:#ffffff;
+    border-bottom:1px solid #e5e7eb;
+    box-shadow:0 2px 10px rgba(0,0,0,0.04);
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+nav b{
+    font-size:20px;
+    color:#111827;
+}
+
+nav div{
+    display:flex;
+    gap:12px;
+}
+
+nav a{
+    text-decoration:none;
+    color:#4b5563;
+    font-weight:500;
+    padding:8px 12px;
+    border-radius:8px;
+}
+
+nav a:hover{
+    background:#f3f4f6;
+    color:#111827;
+}
+
+/* ================= PAGE TITLE ================= */
+h2{
+    text-align:center;
+    margin:35px 0 25px;
+    font-size:32px;
+    color:#111827;
+}
+
+/* ================= MAIN CONTAINER ================= */
+.container{
+    width:90%;
+    max-width:850px;
+    margin:auto;
+}
+
+/* ================= STUDY CARD ================= */
+.study-card{
+    background:#ffffff;
+    margin-bottom:18px;
+    padding:22px;
+    border-radius:18px;
+    border:1px solid #e5e7eb;
+    box-shadow:0 4px 14px rgba(0,0,0,0.05);
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+}
+
+.study-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* ================= STUDY INFO ================= */
+.study-info{
+    flex:1;
+}
+
+.study-info h3{
+    font-size:20px;
+    margin-bottom:10px;
+    color:#111827;
+}
+
+.study-info p{
+    color:#6b7280;
+    font-size:15px;
+    line-height:1.6;
+}
+
+/* ================= BUTTONS ================= */
+.study-action{
+    display:flex;
+    align-items:center;
+}
+
+button{
+    padding:11px 18px;
+    border:none;
+    border-radius:10px;
+    background:#6366f1;
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+    font-size:14px;
+}
+
+button:hover{
+    background:#4f46e5;
+}
+
+/* ================= DELETE BUTTON ================= */
+.delete-form{
+    display:flex;
+    justify-content:center;
+    margin:35px 0;
+}
+
+.delete-form button{
+    background:#ef4444;
+    padding:13px 20px;
+}
+
+.delete-form button:hover{
+    background:#dc2626;
+}
+
+/* ================= EMPTY STATE ================= */
+.empty-text{
+    text-align:center;
+    margin-top:40px;
+    color:#6b7280;
+    font-size:16px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:768px){
+
+    nav{
+        padding:14px 20px;
+        flex-direction:column;
+        gap:12px;
+    }
+
+    .study-card{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .study-action{
+        width:100%;
+    }
+
+    .study-action a{
+        width:100%;
+    }
+
+    button{
+        width:100%;
+    }
+
+    h2{ 
+        font-size:26px;
+    }
+}
+
+
+.topics-list{
+    margin-top: 10px;
+}
+
+.topic-item{
+    background: rgba(255,255,255,0.05);
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+}

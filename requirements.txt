@@ -1,0 +1,7 @@
+Flask
+Flask-SQLAlchemy
+Werkzeug
+python-dotenv
+PyPDF2
+openai
+email-validator

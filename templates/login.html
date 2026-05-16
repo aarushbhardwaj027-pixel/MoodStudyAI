@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login - Moody Study AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav>
+        <b>Moody Study AI</b>
+
+        <div>
+            <a href="/">Home</a>
+            <a href="/auth/login">Login</a>
+            <a href="/auth/signup">Signup</a>
+        </div>
+    </nav>
+
+    <hr>
+
+    <h2>Login</h2>
+
+    <p>Welcome back! Login to continue your study journey.</p>
+
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <p><b>{{ message }}</b></p>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <!-- LOGIN FORM -->
+    <form method="POST">
+
+        <label>Username:</label><br>
+        <input type="text" name="username" placeholder="Enter username" required>
+        <br><br>
+
+        <label>Email:</label><br>
+        <input type="email" name="email" placeholder="Enter email" required>
+        <br><br>
+
+        <label>Password:</label><br>
+        <input type="password" name="password" placeholder="Enter password" required>
+        <br><br>
+
+        <button type="submit">Login</button>
+
+    </form>
+
+    <br>
+
+    <p>
+        Don’t have an account?
+        <a href="/auth/signup">Create one</a>
+    </p>
+
+</body>
+
+</html>

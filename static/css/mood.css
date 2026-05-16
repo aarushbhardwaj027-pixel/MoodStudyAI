@@ -1,0 +1,204 @@
+/* ================= BASE ================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transition: all 0.25s ease;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    min-height: 100vh;
+    background: #f6f7fb;
+    color: #1f2937;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 50px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.navbar a {
+    text-decoration: none;
+    margin-left: 14px;
+    color: #4b5563;
+    padding: 6px 10px;
+    border-radius: 8px;
+}
+
+.navbar a:hover {
+    background: #f3f4f6;
+}
+
+/* ================= MAIN ================= */
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+.card {
+    width: 100%;
+    max-width: 750px;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 18px;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+}
+
+/* ================= TEXT ================= */
+
+h2 {
+    font-size: 26px;
+    margin-bottom: 6px;
+}
+
+.subtext {
+    color: #6b7280;
+    margin-bottom: 25px;
+}
+
+/* ================= GRID ================= */
+
+.mood-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+/* ================= BUTTON ================= */
+
+.mood-card {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ================= EMOJI CIRCLE ================= */
+
+.emoji-circle {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 54px;
+    border: 2px solid #e5e7eb;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+
+    transition: all 0.25s ease;
+}
+
+/* ================= LABEL ================= */
+
+.label {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    background: #f3f4f6;
+    padding: 5px 14px;
+    border-radius: 8px;
+}
+
+/* ================= BASE GLOW (VERY LIGHT DEFAULT) ================= */
+
+.happy .emoji-circle {
+    box-shadow: 0 0 10px rgba(255, 200, 0, 0.15);
+}
+
+.excited .emoji-circle {
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.15);
+}
+
+.normal .emoji-circle {
+    box-shadow: 0 0 10px rgba(100, 150, 255, 0.12);
+}
+
+.tired .emoji-circle {
+    box-shadow: 0 0 10px rgba(160, 160, 160, 0.12);
+}
+
+.sad .emoji-circle {
+    box-shadow: 0 0 10px rgba(120, 140, 255, 0.12);
+}
+
+.stressed .emoji-circle {
+    box-shadow: 0 0 10px rgba(255, 80, 80, 0.15);
+}
+
+/* ================= HOVER GLOW (ALL SAME BEHAVIOR) ================= */
+
+.mood-card:hover .emoji-circle {
+    transform: scale(1.07);
+}
+
+.happy:hover .emoji-circle {
+    box-shadow: 0 0 30px rgba(255, 200, 0, 0.6);
+}
+
+.excited:hover .emoji-circle {
+    box-shadow: 0 0 30px rgba(255, 140, 0, 0.6);
+}
+
+.normal:hover .emoji-circle {
+    box-shadow: 0 0 30px rgba(100, 150, 255, 0.5);
+}
+
+.tired:hover .emoji-circle {
+    box-shadow: 0 0 30px rgba(160, 160, 160, 0.5);
+}
+
+.sad:hover .emoji-circle {
+    box-shadow: 0 0 30px rgba(120, 140, 255, 0.5);
+}
+
+.stressed:hover .emoji-circle {
+    box-shadow: 0 0 30px rgba(255, 80, 80, 0.7);
+}
+
+/* ================= STRESSED ONLY SUBTLE PULSE ================= */
+
+.stressed .emoji-circle {
+    animation: pulse 2.2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+}
+
+/* ================= CLICK EFFECT ================= */
+
+.mood-card:active .emoji-circle {
+    transform: scale(0.92);
+}
+
+/* ================= FOOTER ================= */
+
+.footer {
+    text-align: center;
+    padding: 16px;
+    font-size: 13px;
+    color: #6b7280;
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    margin-top: auto;
+}

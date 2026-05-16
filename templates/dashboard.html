@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dashboard - Mood Study AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+
+<body id="appBody">
+
+    <div class="navbar">
+        <div>
+            <b>Mood Study AI</b>
+        </div>
+
+        <div>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/dashboard/progress">Progress</a>
+            <a href="/auth/logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+
+        {% if not syllabus_exists %}
+
+        <div class="main-layout">
+
+            <div class="left-panel">
+
+                <div class="card">
+
+                    <h3>📊 Average Focus</h3>
+
+                    <div class="progress-vertical">
+                        <div class="progress-fill-vertical"
+                            style="width: {{ (progress_percent or 0)|round(0) }}%;">
+                        </div>
+                    </div>
+
+                    <p>{{ avg_focus or 0 }}% avg concentration</p>
+
+                </div>
+
+                <div class="card">
+
+                    <h2>📚 Upload Your Syllabus</h2>
+
+                    <form action="/dashboard/upload_syllabus"
+                          method="POST"
+                          enctype="multipart/form-data">
+
+                        <label>Upload PDF:</label>
+                        <input type="file" name="pdf_file">
+
+                        <br><br>
+
+                        <label>OR Paste Text:</label>
+                        <textarea name="text_input"
+                                  rows="6"
+                                  placeholder="Paste syllabus here..."></textarea>
+
+                        <br><br>
+
+                        <label>Number of Days:</label>
+                        <input type="number" name="days" placeholder="e.g. 30">
+
+                        <br><br>
+
+                        <button type="submit">Generate Study Plan</button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT (40%) -->
+            <div class="right-metrics">
+
+                <div class="card">
+
+                    <h3>📅 Study Progress</h3>
+
+                    <div class="progress-vertical">
+                        <div class="progress-fill-vertical"
+                             style="height: {{ progress_percent or 0 }}%;">
+                        </div>
+                    </div>
+
+                    <p>{{ completed_days or 0 }} / {{ total_days or 0 }} days completed</p>
+
+                </div>
+
+                <div class="card">
+
+                    <h3>🎯 Average Focus</h3>
+
+                    <div class="progress-vertical">
+                        <div class="progress-fill-vertical"
+                            style="width: {{ (progress_percent or 0)|round(0) }}%;">
+                        </div>
+                    </div>
+
+                    <p>{{ avg_focus or 0 }}% concentration</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <!-- PLAN READY UI -->
+        <div class="main-layout">
+
+            <div class="left-panel">
+
+                <div class="card">
+
+                    <h2>🎯 Your Study Plan is Ready</h2>
+
+                    <p>Everything is set. Time to build momentum.</p>
+
+                    <h2>🔥 Current Streak: {{ user.streak }} Days</h2>
+
+                    <div class="stats">
+
+                        <div class="stat">
+                            <h3>📚</h3>
+                            <p>Study Mode</p>
+                        </div>
+
+                        <div class="stat">
+                            <h3>⚡</h3>
+                            <p>AI Planned</p>
+                        </div>
+
+                        <div class="stat">
+                            <h3>🎯</h3>
+                            <p>Focus Ready</p>
+                        </div>
+
+                    </div>
+
+                    <h4 class="section-title">Quick Actions</h4>
+
+                    <div class="btn-group">
+
+                        <a href="/dashboard/view_plan?mode=view">
+                            <button>View Plan</button>
+                        </a>
+
+                        <a href="/dashboard/view_plan?mode=study">
+                            <button>Start Studying</button>
+                        </a>
+
+                        <a href="/dashboard/progress">
+                            <button>Check Progress</button>
+                        </a>
+
+                        <a href="/dashboard/analytics">
+                            <button>Check Analytics</button>
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT (40%) -->
+            <div class="right-metrics">
+
+                <div class="card">
+
+                    <h3>📅 Study Progress</h3>
+
+                    <div class="progress-vertical">
+                        <div class="progress-fill-vertical"
+                             style="width: {{ progress_percent or 0 }}%;">
+                        </div>
+                    </div>
+
+                    <p>{{ completed_days or 0 }} / {{ total_days or 0 }} days completed</p>
+
+                </div>
+
+                <div class="card">
+
+                    <h3>🎯 Average Focus</h3>
+
+                    <div class="progress-vertical">
+                        <div class="progress-fill-vertical"
+                            style="width: {{ (avg_focus or 0)|round(0) }}%;">
+                        </div>
+                    </div>
+
+                    <p>{{ avg_focus or 0 }}% concentration</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    <footer class="footer">
+        <p>✨ Mood Study AI — built for focus, balance, and growth</p>
+    </footer>
+
+</body>
+
+</html>

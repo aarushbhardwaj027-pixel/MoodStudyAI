@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Progress</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/progress.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+    <div class="navbar">
+        <div>
+            <b>Mood Study AI</b>
+        </div>
+
+        <div>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/dashboard/analytics">Analytics</a>
+            <a href="/auth/logout">Logout</a>
+        </div>
+    </div>
+
+
+    <h1>📈 Your Study Progress</h1>
+
+    <div>
+
+        <!-- LEFT SIDE -->
+        <div>
+
+            <div>
+                <h2>Overall Progress</h2>
+
+                <div>
+                    <div style="width: {{ progress_percent }}%;">
+                        {{ progress_percent }}%
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h2>Summary</h2>
+                <p>Total Days: {{ total_days }}</p>
+                <p>Completed Days: {{ completed_days }}</p>
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div>
+
+            <div>
+                <h2>📊 Focus Graph</h2>
+                <div class="chart-box">
+                    <canvas id="focusChart"></canvas>
+                </div>
+            </div>
+
+            <div>
+                <h2>📋 Progress Table</h2>
+
+                <table border="1" cellpadding="10">
+                    <tr>
+                        <th>Day</th>
+                        <th>Focus %</th>
+                    </tr>
+
+                    {% for p in progress %}
+                    <tr>
+                        <td>{{ p.day }}</td>
+                        <td>{{ p.focus_score }}%</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <a href="/dashboard">
+        <button>Back</button>
+    </a>
+
+    <script>
+        let progress = {{ progress | tojson }};
+
+        let days = progress.map(p => p.day);
+        let scores = progress.map(p => p.focus_score);
+
+        new Chart(document.getElementById("focusChart"), {
+            type: "line",
+            data: {
+                labels: days,
+                datasets: [{
+                    label: "Focus %",
+                    data: scores,
+                    borderColor: "#6366f1",
+                    backgroundColor: "rgba(99,102,241,0.2)",
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // 🔥 THIS IS THE KEY FIX
+
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Select Mood</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mood.css') }}">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div><b>Mood Study AI</b></div>
+
+        <div>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/dashboard/progress">Progress</a>
+            <a href="/auth/logout">Logout</a>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="container">
+
+        <div class="card">
+
+            <h2>How are you feeling today?</h2>
+            <p class="subtext">This sets your study vibe instantly ✨</p>
+
+            <form action="/dashboard/start_study/{{ day }}" method="POST">
+
+                <div class="mood-grid">
+
+                    <button type="submit" class="mood-card happy" name="mood" value="happy">
+                        <div class="emoji-circle">😄</div>
+                        <div class="label">Happy</div>
+                    </button>
+
+                    <button type="submit" class="mood-card excited" name="mood" value="excited">
+                        <div class="emoji-circle">🤩</div>
+                        <div class="label">Excited</div>
+                    </button>
+
+                    <button type="submit" class="mood-card normal" name="mood" value="normal">
+                        <div class="emoji-circle">😐</div>
+                        <div class="label">Normal</div>
+                    </button>
+
+                    <button type="submit" class="mood-card tired" name="mood" value="tired">
+                        <div class="emoji-circle">😴</div>
+                        <div class="label">Tired</div>
+                    </button>
+
+                    <button type="submit" class="mood-card sad" name="mood" value="sad">
+                        <div class="emoji-circle">😢</div>
+                        <div class="label">Sad</div>
+                    </button>
+
+                    <button type="submit" class="mood-card stressed" name="mood" value="stressed">
+                        <div class="emoji-circle">😫</div>
+                        <div class="label">Stressed</div>
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <footer class="footer">
+        <p>✨ Mood Study AI adapts your entire study experience</p>
+    </footer>
+
+</body>
+
+</html>
