@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AI Test Scores</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/analytics.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/test_score.css') }}">
+</head>
+
+<body>
+
+    <div class="navbar">
+        <div class="navbar-brand">
+            <span class="brand-dot"></span>
+            <b>Mood Study AI</b>
+        </div>
+        <div class="navbar-links">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/dashboard/progress">Progress</a>
+            <a href="/auth/logout" class="logout-link">Logout</a>
+        </div>
+    </div>
+
+    <h1>🧪 AI Test Scores</h1>
+
+    {% if not days %}
+
+    <div class="card" style="text-align:center; padding:40px;">
+        <h2>No tests taken yet</h2>
+        <p>Complete a study session and submit MCQs to see your scores here.</p>
+        <a href="/dashboard"><button>Go to Dashboard</button></a>
+    </div>
+
+    {% else %}
+
+    <div class="grid">
+        <div class="card">
+            <div class="big">{{ avg_score }}%</div>
+            <div class="label">Average MCQ Score</div>
+        </div>
+        <div class="card">
+            <div class="big">{{ total_tests }}</div>
+            <div class="label">Topics Tested</div>
+        </div>
+        <div class="card">
+            <div class="big">{{ best_score }}%</div>
+            <div class="label">Best Score</div>
+            <div class="label">{{ best_topic }}</div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+        <h3>📊 Score Trend by Day</h3>
+        <div class="chart-container">
+            <canvas id="scoreChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+        <h3>📅 Day Breakdown
+            <span style="font-size:0.8rem; color:#aaa; font-weight:400;">
+                — click a day to see topics
+            </span>
+        </h3>
+
+        {% for d in days %}
+
+        <div class="day-card" onclick="toggleDay({{ loop.index0 }})">
+
+            <div class="day-header">
+
+                <div class="day-header-left">
+                    <div class="day-number">Day {{ d.day }}</div>
+                    <div>
+                        <div class="day-avg" style="color:
+                            {% if d.avg_score >= 80 %}#28a745
+                            {% elif d.avg_score >= 50 %}#6c63ff
+                            {% else %}#dc3545{% endif %}">
+                            {{ d.avg_score }}%
+                        </div>
+                        <div class="day-meta">
+                            {{ d.topic_count }} topic{{ 's' if d.topic_count > 1 }}
+                            &nbsp;·&nbsp;
+                            Best: {{ d.best_topic }} ({{ d.best_score }}%)
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="score-badge
+                        {% if d.avg_score >= 80 %}badge-green
+                        {% elif d.avg_score >= 50 %}badge-purple
+                        {% else %}badge-red{% endif %}">
+                        {% if d.avg_score >= 80 %}Strong
+                        {% elif d.avg_score >= 50 %}Okay
+                        {% else %}Weak{% endif %}
+                    </span>
+
+                    <form action="/dashboard/delete_test_day/{{ d.day }}"
+                          method="POST"
+                          style="margin:0;"
+                          onclick="event.stopPropagation()">
+                        <button type="submit" class="delete-day-btn">
+                            🗑 Delete Day
+                        </button>
+                    </form>
+
+                    <span class="day-arrow" id="arrow-{{ loop.index0 }}">▼</span>
+                </div>
+
+            </div>
+
+            <div class="topic-table" id="topics-{{ loop.index0 }}">
+
+                <div class="topic-table-header">
+                    <span>Topic</span>
+                    <span>Correct</span>
+                    <span>Score</span>
+                </div>
+
+                {% for t in d.topics %}
+                <div class="topic-row">
+                    <div class="topic-name">{{ t.topic.split("::")[0].strip() }}</div>
+                    <div class="topic-correct">{{ t.correct_answers }} / {{ t.total_questions }}</div>
+                    <div class="topic-score" style="color:
+                        {% if t.score >= 80 %}#28a745
+                        {% elif t.score >= 50 %}#6c63ff
+                        {% else %}#dc3545{% endif %}">
+                        {{ t.score }}%
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% endif %}
+
+    <div class="back">
+        <a href="/dashboard"><button>⬅ Back to Dashboard</button></a>
+    </div>
+
+    <script>
+        function toggleDay(index) {
+            const table = document.getElementById("topics-" + index);
+            const arrow = document.getElementById("arrow-" + index);
+            const isOpen = table.style.display === "block";
+            table.style.display = isOpen ? "none" : "block";
+            arrow.classList.toggle("open", !isOpen);
+        }
+
+        const chartData = {{ chart_data | tojson | safe }};
+
+        if (chartData && chartData.length > 0) {
+            const labels = chartData.map(d => "Day " + d.day);
+            const scores = chartData.map(d => d.score);
+
+            new Chart(document.getElementById("scoreChart"), {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Avg MCQ Score %",
+                        data: scores,
+                        borderColor: "#6366f1",
+                        backgroundColor: "rgba(99,102,241,0.15)",
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: 5,
+                        pointBackgroundColor: scores.map(s =>
+                            s >= 80 ? "#28a745" : s >= 50 ? "#6366f1" : "#dc3545"
+                        )
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100 }
+                    }
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

@@ -2,11 +2,10 @@ from flask import Flask,session,render_template,request,redirect
 from auth.routes import auth_bp
 from dashboard.routes import dashboard_bp
 from extensions import db
-from models.user_model import User
-from models.syllabus_model import StudyPlan
+import os
 
 app = Flask(__name__)
-app.secret_key = '111222333'
+app.secret_key = os.getenv('SECRET_KEY')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = r'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

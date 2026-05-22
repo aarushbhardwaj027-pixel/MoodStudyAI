@@ -3,23 +3,24 @@
 
 <head>
     <title>Select Mood</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/mood.css') }}">
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
     <div class="navbar">
-        <div><b>Mood Study AI</b></div>
-
-        <div>
+        <div class="navbar-brand">
+            <span class="brand-dot"></span>
+            <b>Mood Study AI</b>
+        </div>
+        <div class="navbar-links">
             <a href="/dashboard">Dashboard</a>
             <a href="/dashboard/progress">Progress</a>
-            <a href="/auth/logout">Logout</a>
+            <a href="/auth/logout" class="logout-link">Logout</a>
         </div>
     </div>
 
-    <!-- MAIN -->
     <div class="container">
 
         <div class="card">

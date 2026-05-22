@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Notes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notes.css') }}">
+</head>
+
+<body>
+
+    <div class="navbar">
+        <div class="navbar-brand"><b>Mood Study AI</b></div>
+        <div class="navbar-links">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/dashboard/analytics">Analytics</a>
+            <a href="/auth/logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="notes-container">
+
+        <div class="notes-header">
+            <h1>📝 My Study Notes</h1>
+            <p>AI-generated notes from your study sessions</p>
+            {% if days %}
+            <button class="download-btn" onclick="downloadPDF()">⬇️ Download All as PDF</button>
+            {% endif %}
+        </div>
+
+        {% if not days %}
+
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h2>No notes yet</h2>
+            <p>Click "Generate Notes" after completing MCQs in a study session.</p>
+            <a href="/dashboard"><button class="go-btn">Go to Dashboard</button></a>
+        </div>
+
+        {% else %}
+
+        <div id="notesContent">
+
+            {% for d in days %}
+
+            <div class="day-section">
+
+                <div class="day-label">Day {{ d.day }} — {{ d.count }} topic{{ 's' if d.count > 1 }}</div>
+
+                {% for n in d.notes %}
+
+                <div class="note-card" id="note-{{ n.id }}">
+
+                    <div class="note-header" onclick="toggleNote('body-{{ n.id }}', 'arrow-{{ n.id }}')">
+                        <div class="note-topic">📘 {{ n.topic }}</div>
+                        <span class="note-arrow" id="arrow-{{ n.id }}">▼</span>
+                        <form action="/dashboard/delete_notes/{{n.id}}" method="POST">
+                            <button type="submit">DELETE</button>
+                        </form>
+                    </div>
+
+                    <div class="note-body" id="body-{{ n.id }}">
+
+                        {% if n.summary %}
+                        <div class="note-section">
+                            <div class="note-section-title">📌 Summary</div>
+                            <p class="note-text">{{ n.summary }}</p>
+                        </div>
+                        {% endif %}
+
+                        {% if n.key_points %}
+                        <div class="note-section">
+                            <div class="note-section-title">✅ Key Points</div>
+                            <ul class="note-list">
+                                {% for point in n.key_points %}
+                                <li>{{ point }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+
+                        {% if n.formulas %}
+                        <div class="note-section">
+                            <div class="note-section-title">🔢 Important Formulas</div>
+                            <ul class="note-list formula-list">
+                                {% for f in n.formulas %}
+                                <li>{{ f }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+
+                        {% if n.remember %}
+                        <div class="note-section">
+                            <div class="note-section-title">⚡ Remember</div>
+                            <ul class="note-list">
+                                {% for tip in n.remember %}
+                                <li>{{ tip }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+
+                        {% if n.quick_recap %}
+                        <div class="note-section recap-section">
+                            <div class="note-section-title">🔄 Quick Recap</div>
+                            <p class="note-text">{{ n.quick_recap }}</p>
+                        </div>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+
+        function toggleNote(bodyId, arrowId) {
+            const body  = document.getElementById(bodyId);
+            const arrow = document.getElementById(arrowId);
+            const isOpen = body.style.display === "block";
+            body.style.display = isOpen ? "none" : "block";
+            arrow.classList.toggle("open", !isOpen);
+        }
+
+        function downloadPDF() {
+            const btn = document.querySelector(".download-btn");
+            btn.innerText = "⏳ Generating PDF...";
+            btn.disabled  = true;
+
+            // open all notes for PDF
+            document.querySelectorAll(".note-body").forEach(b => b.style.display = "block");
+
+            const element = document.getElementById("notesContent");
+            const opt = {
+                margin:       10,
+                filename:     "MoodStudyAI_Notes.pdf",
+                image:        { type: "jpeg", quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: "mm", format: "a4", orientation: "portrait" }
+            };
+
+            html2pdf().set(opt).from(element).save().then(function() {
+                btn.innerText = "⬇️ Download All as PDF";
+                btn.disabled  = false;
+            });
+        }
+
+    </script>
+
+</body>
+</html>

@@ -1,50 +1,185 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Moody Study AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<nav>
-    <b>Moody Study AI</b>
-
-    <div>
-        <a href="/">Home</a>
-        <a href="/auth/login">Login</a>
-        <a href="/auth/signup">Signup</a>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="navbar-brand">
+            <span class="brand-dot"></span>
+            <b>Mood Study AI</b>
+        </div>
+        <div class="navbar-links">
+            <a href="/auth/signup">Sign Up</a>
+            <a href="/auth/login">Log In</a>
+        </div>
     </div>
-</nav>
 
-<hr>
+    <!-- HERO -->
+    <div class="hero">
 
-<!-- HERO SECTION -->
-<div class="hero">
+        <div class="hero-text">
+            <div class="hero-badge fade-up delay-1">✨ AI Powered Study Planner</div>
 
-    <div class="hero-text">
+            <h1 class="fade-up delay-2">
+                Study smarter with AI that understands your
+                <span class="gradient-text">mood</span>
+            </h1>
 
-        <h1>Study smarter with AI that understands your mood</h1>
+            <p class="fade-up delay-3" style="text-align:left; margin:20px 0;">
+                Plan your studies, track your focus, and adapt your learning style
+                based on how you feel every day. Your mood shapes your session — not the other way around.
+            </p>
 
-        <p>
-            Plan your studies, track your focus, and adapt your learning style
-            based on how you feel every day.
-        </p>
+            <div class="fade-up delay-4">
+                <a href="/auth/signup">
+                    <button style="margin: 0; display:inline-block;">Get Started Free</button>
+                </a>
+            </div>
+        </div>
 
-        <a href="/auth/login">
-            <button>Get Started</button>
+        <div class="hero-image fade-up delay-3">
+            <img src="{{ url_for('static', filename='images/hero.jpeg') }}" alt="Study AI">
+        </div>
+
+    </div>
+
+    <!-- STATS BAR --> 
+    <div class="stats-bar">
+        <div class="stats-inner">
+            <div class="stat-item">
+                <h3>5+</h3>
+                <p>Mood Modes</p>
+            </div>
+            <div class="stat-item">
+                <h3>AI</h3>
+                <p>Powered Tutor</p>
+            </div>
+            <div class="stat-item">
+                <h3>100%</h3>
+                <p>Personalized</p>
+            </div>
+            <div class="stat-item">
+                <h3>MCQ</h3>
+                <p>Practice Per Topic</p>
+            </div>
+            <div class="stat-item">
+                <h3>∞</h3>
+                <p>MCQ Practice Per Topic</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="features">
+
+        <h2>Everything you need to study effectively</h2>
+        <p class="features-sub">Built around your emotions, not just your schedule</p>
+
+        <div class="features-grid">
+
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3>AI Study Planner</h3>
+                <p>Upload your syllabus PDF or paste text. AI breaks it into daily topics from easy to hard
+                    automatically.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">😊</div>
+                <h3>Mood Based Sessions</h3>
+                <p>Tell us how you feel. Happy? Intense 50-min sessions. Tired? Easy 30-min sessions. Your mood drives
+                    everything.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📖</div>
+                <h3>AI Tutor Per Topic</h3>
+                <p>Click any topic in your checklist and get an instant explanation with examples tailored to your
+                    intensity level.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🧪</div>
+                <h3>MCQ Practice</h3>
+                <p>5 auto-generated MCQs per topic. Get instant green/red feedback and see exactly what you got wrong.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Focus Tracking</h3>
+                <p>Real-time focus score based on your pause count, session time, and streak. Know exactly how focused
+                    you were.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Smart Analytics</h3>
+                <p>Track your best mood for studying, focus trends, MCQ scores by day, and streaks — all in one place.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <div class="how">
+
+        <h2>How it works</h2>
+        <p class="how-sub">Four simple steps to a smarter study session</p>
+
+        <div class="steps">
+
+            <div class="step">
+                <div class="step-num">1</div>
+                <h4>Upload Syllabus</h4>
+                <p>PDF or plain text, AI plans your days</p>
+            </div>
+
+            <div class="step">
+                <div class="step-num">2</div>
+                <h4>Pick Your Mood</h4>
+                <p>Happy, tired, stressed — we adapt</p>
+            </div>
+
+            <div class="step">
+                <div class="step-num">3</div>
+                <h4>Study with AI</h4>
+                <p>Explanations + MCQs per topic</p>
+            </div>
+
+            <div class="step">
+                <div class="step-num">4</div>
+                <h4>Track Progress</h4>
+                <p>Focus score, streaks, analytics</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-section">
+        <h2>Ready to study smarter?</h2>
+        <p>Join now and let AI adapt to how you actually feel.</p>
+        <a href="/auth/signup">
+            <button style="margin: 0 auto; display:inline-block;">Start for Free</button>
         </a>
-
     </div>
 
-    <div class="hero-image">
-
-        <img src="{{ url_for('static', filename='images/hero.jpeg') }}" alt="Study AI">
-
-    </div>
-
-</div>
+    <!-- FOOTER -->
+    <footer>
+        ✨ Moody Study AI — built for focus, balance, and growth
+    </footer>
 
 </body>
+
 </html>

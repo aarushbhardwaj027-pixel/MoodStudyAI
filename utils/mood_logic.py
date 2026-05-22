@@ -14,7 +14,7 @@ def get_study_mode(mood, day_plan):
             "style": "fast + practice heavy",
             "message": "High energy day! Let’s crush it 🚀",
             "max_cycles": 3
-        }
+        } 
 
     # ================= NORMAL =================
 

@@ -1,0 +1,279 @@
+/* ================= BASE ================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+    min-height: 100vh;
+    background: #f6f7fb;
+    color: #1f2937;
+    font-size: 16px;
+    line-height: 1.6;
+
+    display: flex;
+    flex-direction: column;
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar {
+    position: sticky;
+    top: 18px;
+    z-index: 1000;
+
+    width: calc(100% - 48px);
+    margin: 18px auto 0;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 8px 28px;
+
+    background: rgba(255, 255, 255, 0.78);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    border: 1px solid rgba(255,255,255,0.45);
+
+    border-radius: 22px;
+
+    box-shadow:
+        0 10px 30px rgba(99, 102, 241, 0.08),
+        0 4px 12px rgba(0,0,0,0.04);
+
+    transition: all 0.25s ease;
+}
+
+.navbar:hover {
+    box-shadow:
+        0 14px 36px rgba(99, 102, 241, 0.12),
+        0 6px 18px rgba(0,0,0,0.06);
+}
+
+/* ================= BRAND ================= */
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-dot {
+    width: 11px;
+    height: 11px;
+
+    border-radius: 50%;
+
+    background: linear-gradient(
+        135deg,
+        #8b5cf6,
+        #6366f1
+    );
+
+    box-shadow:
+        0 0 0 5px rgba(99,102,241,0.12),
+        0 4px 10px rgba(99,102,241,0.25);
+}
+
+.navbar b,
+nav b {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    color: #111827;
+}
+
+/* ================= NAV LINKS ================= */
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.navbar a {
+    position: relative;
+
+    text-decoration: none;
+
+    color: #4b5563;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    padding: 10px 16px;
+
+    border-radius: 12px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.navbar a:hover {
+    background: rgba(99,102,241,0.08);
+
+    color: #111827;
+
+    transform: translateY(-1px);
+}
+
+/* ================= ACTIVE EFFECT ================= */
+
+.navbar a::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    bottom: 6px;
+
+    width: 0%;
+    height: 2px;
+
+    background: linear-gradient(
+        90deg,
+        #6366f1,
+        #8b5cf6
+    );
+
+    border-radius: 20px;
+
+    transform: translateX(-50%);
+
+    transition: width 0.25s ease;
+}
+
+.navbar a:hover::after {
+    width: 55%;
+}
+
+/* ================= LOGOUT ================= */
+
+.logout-link {
+    color: #9ca3af !important;
+}
+
+.logout-link:hover {
+    background: #fef2f2 !important;
+
+    color: #ef4444 !important;
+}
+
+/* ================= CONTAINER ================= */
+
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    flex: 1;
+}
+
+/* ================= CARD ================= */
+
+.card {
+    background: #ffffff;
+    padding: 28px;
+    border-radius: 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 28px rgba(99, 102, 241, 0.1);
+}
+
+.card h2,
+.card h3 {
+    color: #111827;
+}
+
+/* ================= BUTTON ================= */
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+/* ================= FOOTER ================= */
+
+.footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: #9ca3af;
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    width: 100%;
+    margin-top: auto;
+}
+
+.footer p {
+    margin: 0;
+}
+
+/* ================= ANIMATION ================= */
+
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 900px) {
+
+    .navbar {
+        width: calc(100% - 24px);
+        padding: 14px 18px;
+        top: 10px;
+        border-radius: 18px;
+    }
+
+    .navbar-links {
+        gap: 4px;
+    }
+
+    .navbar a {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .navbar b,
+    nav b {
+        font-size: 16px;
+    }
+
+    .container {
+        padding: 18px 16px;
+    }
+}

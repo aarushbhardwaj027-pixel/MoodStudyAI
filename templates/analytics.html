@@ -1,24 +1,29 @@
 <!DOCTYPE html>
 <html>
-
+ 
 <head>
     <title>Study Analytics</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/analytics.css') }}">
 </head>
 
 <body>
 
     <div class="navbar">
-        <div>
+
+        <div class="navbar-brand">
+            <span class="brand-dot"></span>
             <b>Mood Study AI</b>
         </div>
 
-        <div>
+        <div class="navbar-links">
             <a href="/dashboard">Dashboard</a>
-            <a href="/dashboard/progress">Progress</a>
-            <a href="/auth/logout">Logout</a>
+            <a href="/dashboard/test_score">Test Scores</a>
+            <a href="/auth/logout" class="logout-link">Logout</a>
         </div>
+
     </div>
 
 
@@ -131,10 +136,29 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+
                 scales: {
+
+                    x: {
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 0,
+                            minRotation: 0,
+                            color: "#6b7280"
+                        },
+
+                        grid: {
+                            display: false
+                        }
+                    },
+
                     y: {
                         beginAtZero: true,
-                        max: 100
+                        max: 100,
+
+                        ticks: {
+                            color: "#6b7280"
+                        }
                     }
                 }
             }

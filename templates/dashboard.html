@@ -3,20 +3,24 @@
 
 <head>
     <title>Dashboard - Mood Study AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 </head>
 
 <body id="appBody">
 
     <div class="navbar">
-        <div>
+        <div class="navbar-brand">
+            <span class="brand-dot"></span>
             <b>Mood Study AI</b>
         </div>
-
-        <div>
+        <div class="navbar-links">
             <a href="/dashboard">Dashboard</a>
             <a href="/dashboard/progress">Progress</a>
-            <a href="/auth/logout">Logout</a>
+            <a href="/auth/logout" class="logout-link">Logout</a>
         </div>
     </div>
 
@@ -24,181 +28,123 @@
 
         {% if not syllabus_exists %}
 
-        <div class="main-layout">
+        <div class="main-layout centered">
 
-            <div class="left-panel">
+            <div class="main-card">
+                <div class="main-card-header">
+                    <span class="card-icon">📚</span>
+                    <h2>Upload Your Syllabus</h2>
+                    <p class="subtitle">Upload a PDF or paste your syllabus text — AI will build your personalized study
+                        plan.</p>
+                </div>
 
-                <div class="card">
+                <form action="/dashboard/upload_syllabus" method="POST" enctype="multipart/form-data"
+                    class="syllabus-form">
 
-                    <h3>📊 Average Focus</h3>
-
-                    <div class="progress-vertical">
-                        <div class="progress-fill-vertical"
-                            style="width: {{ (progress_percent or 0)|round(0) }}%;">
+                    <div class="form-group">
+                        <label>Upload PDF</label>
+                        <div class="file-drop">
+                            <input type="file" name="pdf_file" id="pdf_file">
+                            <label for="pdf_file" class="file-label">
+                                <span id="upload-icon" class="file-icon">📄</span>
+                                <span id="file-text">Choose a PDF file</span>
+                            </label>
                         </div>
                     </div>
 
-                    <p>{{ avg_focus or 0 }}% avg concentration</p>
 
-                </div>
+                    <div class="divider-row"><span>or</span></div>
 
-                <div class="card">
-
-                    <h2>📚 Upload Your Syllabus</h2>
-
-                    <form action="/dashboard/upload_syllabus"
-                          method="POST"
-                          enctype="multipart/form-data">
-
-                        <label>Upload PDF:</label>
-                        <input type="file" name="pdf_file">
-
-                        <br><br>
-
-                        <label>OR Paste Text:</label>
-                        <textarea name="text_input"
-                                  rows="6"
-                                  placeholder="Paste syllabus here..."></textarea>
-
-                        <br><br>
-
-                        <label>Number of Days:</label>
-                        <input type="number" name="days" placeholder="e.g. 30">
-
-                        <br><br>
-
-                        <button type="submit">Generate Study Plan</button>
-
-                    </form>
-
-                </div>
-
-            </div>
-
-            <!-- RIGHT (40%) -->
-            <div class="right-metrics">
-
-                <div class="card">
-
-                    <h3>📅 Study Progress</h3>
-
-                    <div class="progress-vertical">
-                        <div class="progress-fill-vertical"
-                             style="height: {{ progress_percent or 0 }}%;">
-                        </div>
+                    <div class="form-group">
+                        <label>Paste Syllabus Text</label>
+                        <textarea name="text_input" rows="7" placeholder="Paste your syllabus here..."></textarea>
                     </div>
 
-                    <p>{{ completed_days or 0 }} / {{ total_days or 0 }} days completed</p>
-
-                </div>
-
-                <div class="card">
-
-                    <h3>🎯 Average Focus</h3>
-
-                    <div class="progress-vertical">
-                        <div class="progress-fill-vertical"
-                            style="width: {{ (progress_percent or 0)|round(0) }}%;">
-                        </div>
+                    <div class="form-group">
+                        <label>Number of Days</label>
+                        <input type="number" name="days" placeholder="e.g. 30" required>
                     </div>
 
-                    <p>{{ avg_focus or 0 }}% concentration</p>
+                    <button type="submit" class="generate-btn">Generate Study Plan →</button>
 
-                </div>
-
+                </form>
             </div>
 
         </div>
 
         {% else %}
 
-        <!-- PLAN READY UI -->
         <div class="main-layout">
 
             <div class="left-panel">
+                <div class="card hero-card">
 
-                <div class="card">
-
-                    <h2>🎯 Your Study Plan is Ready</h2>
-
-                    <p>Everything is set. Time to build momentum.</p>
-
-                    <h2>🔥 Current Streak: {{ user.streak }} Days</h2>
+                    <div class="hero-card-top">
+                        <div>
+                            <p class="label-tag">Active Plan</p>
+                            <h2>🎯 Your Study Plan is Ready</h2>
+                            <p>Everything is set. Time to build momentum.</p>
+                        </div>
+                        <div class="streak-badge">
+                            <span class="streak-flame">🔥</span>
+                            <span class="streak-count">{{ user.streak }}</span>
+                            <span class="streak-label">day streak</span>
+                        </div>
+                    </div>
 
                     <div class="stats">
-
                         <div class="stat">
                             <h3>📚</h3>
                             <p>Study Mode</p>
                         </div>
-
                         <div class="stat">
                             <h3>⚡</h3>
                             <p>AI Planned</p>
                         </div>
-
                         <div class="stat">
                             <h3>🎯</h3>
                             <p>Focus Ready</p>
                         </div>
-
                     </div>
 
                     <h4 class="section-title">Quick Actions</h4>
 
                     <div class="btn-group">
-
-                        <a href="/dashboard/view_plan?mode=view">
-                            <button>View Plan</button>
-                        </a>
-
-                        <a href="/dashboard/view_plan?mode=study">
-                            <button>Start Studying</button>
-                        </a>
-
-                        <a href="/dashboard/progress">
-                            <button>Check Progress</button>
-                        </a>
-
-                        <a href="/dashboard/analytics">
-                            <button>Check Analytics</button>
-                        </a>
-
+                        <a href="/dashboard/view_plan?mode=view"><button class="btn-primary">View Plan</button></a>
+                        <a href="/dashboard/view_plan?mode=study"><button class="btn-primary">Start
+                                Studying</button></a>
+                        <a href="/dashboard/progress"><button class="btn-primary">Progress</button></a>
+                        <a href="/dashboard/analytics"><button class="btn-primary">Analytics</button></a>
+                        <a href="/dashboard/test_score"><button class="btn-primary">Test Scores</button></a>
+                        <a href="/dashboard/notes"><button class="btn-primary">Notes</button></a>
                     </div>
 
                 </div>
-
             </div>
 
-            <!-- RIGHT (40%) -->
             <div class="right-metrics">
 
-                <div class="card">
-
-                    <h3>📅 Study Progress</h3>
-
-                    <div class="progress-vertical">
-                        <div class="progress-fill-vertical"
-                             style="width: {{ progress_percent or 0 }}%;">
-                        </div>
+                <div class="card metric-card">
+                    <div class="metric-header">
+                        <h3>📅 Study Progress</h3>
+                        <span class="metric-value">{{ completed_days or 0 }}/{{ total_days or 0 }} days</span>
                     </div>
-
-                    <p>{{ completed_days or 0 }} / {{ total_days or 0 }} days completed</p>
-
+                    <div class="progress-vertical">
+                        <div class="progress-fill-vertical" style="width: {{ progress_percent or 0 }}%;"></div>
+                    </div>
+                    <p class="metric-hint">{{ progress_percent or 0 }}% of plan completed</p>
                 </div>
 
-                <div class="card">
-
-                    <h3>🎯 Average Focus</h3>
-
+                <div class="card metric-card">
+                    <div class="metric-header">
+                        <h3>🎯 Average Focus</h3>
+                        <span class="metric-value">{{ (avg_focus or 0)|round(0) }}%</span>
+                    </div>
                     <div class="progress-vertical">
-                        <div class="progress-fill-vertical"
-                            style="width: {{ (avg_focus or 0)|round(0) }}%;">
+                        <div class="progress-fill-vertical focus-fill" style="width: {{ (avg_focus or 0)|round(0) }}%;">
                         </div>
                     </div>
-
-                    <p>{{ avg_focus or 0 }}% concentration</p>
-
+                    <p class="metric-hint">Concentration across all sessions</p>
                 </div>
 
             </div>
@@ -214,5 +160,21 @@
     </footer>
 
 </body>
+
+<script>
+    document.getElementById('pdf_file').addEventListener('change', function (e) {
+        const fileName = e.target.files[0]?.name;
+        const fileText = document.getElementById('file-text');
+        const fileIcon = document.getElementById('upload-icon');
+
+        if (fileName) {
+            fileText.textContent = fileName;
+            fileIcon.textContent = '✅';
+        } else {
+            fileText.textContent = 'Choose a PDF file';
+            fileIcon.textContent = '📄';
+        }
+    });
+</script>
 
 </html>

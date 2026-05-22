@@ -1,0 +1,209 @@
+/* ================= CARDS AND CHART ================= */
+
+.card {
+    border-radius: 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(99, 102, 241, 0.1);
+}
+
+.card h2,
+.card h3 {
+    color: #111827;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+}
+
+.chart-container {
+    height: 380px;
+    padding: 10px 8px 4px 0;
+    overflow: hidden;
+}
+
+#scoreChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* ================= DAY CARD ================= */
+
+.day-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+    animation: fadeSlideUp 0.45s ease both;
+}
+
+.day-card:hover {
+    transform: translateY(-2px);
+    border-color: #ddd6fe;
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.1);
+}
+
+.day-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.day-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.day-number {
+    min-width: 66px;
+    color: #6366f1;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.day-avg {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.day-meta {
+    margin-top: 3px;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.day-arrow {
+    color: #9ca3af;
+    font-size: 14px;
+    transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.day-arrow.open {
+    color: #6366f1;
+    transform: rotate(180deg);
+}
+
+/* ================= BADGES ================= */
+
+.score-badge {
+    padding: 4px 11px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.badge-green  { background: #dcfce7; color: #166534; }
+.badge-purple { background: #ede9fe; color: #5b21b6; }
+.badge-red    { background: #fee2e2; color: #991b1b; }
+
+/* ================= TOPIC TABLE ================= */
+
+.topic-table {
+    display: none;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #eef2ff;
+    animation: fadeIn 0.25s ease both;
+}
+
+.topic-table-header {
+    display: flex;
+    gap: 12px;
+    padding-bottom: 8px;
+    margin-bottom: 2px;
+    border-bottom: 1px solid #f3f4f6;
+    color: #9ca3af;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.topic-table-header span:first-child  { flex: 1; }
+.topic-table-header span:nth-child(2) { width: 84px; text-align: center; }
+.topic-table-header span:last-child   { width: 72px; text-align: right; }
+
+.topic-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 14px;
+}
+
+.topic-row:last-child { border-bottom: none; }
+
+.topic-name    { flex: 1; min-width: 0; color: #374151; font-weight: 600; }
+.topic-correct { width: 84px; color: #6b7280; text-align: center; }
+.topic-score   { width: 72px; text-align: right; font-weight: 800; }
+
+/* ================= DELETE BUTTON ================= */
+
+.delete-day-btn {
+    background: none;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.delete-day-btn:hover {
+    background: #dc3545;
+    color: white;
+}
+
+/* ================= ANIMATIONS ================= */
+
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 900px) {
+    .navbar {
+        top: 10px;
+        width: calc(100% - 24px);
+        padding: 14px 18px;
+        border-radius: 18px;
+    }
+    .navbar > div:last-child { gap: 4px; }
+    .navbar a { padding: 8px 12px; font-size: 13px; }
+    .navbar b { font-size: 16px; }
+    .chart-container { height: 320px; }
+}
+
+@media (max-width: 600px) {
+    .navbar { align-items: flex-start; gap: 12px; }
+    .navbar > div:last-child { flex-wrap: wrap; }
+    .day-header { align-items: flex-start; flex-direction: column; }
+    .day-header-left { align-items: flex-start; }
+    .day-avg { font-size: 22px; }
+    .topic-row, .topic-table-header { font-size: 12px; }
+    .topic-correct, .topic-table-header span:nth-child(2) { width: 64px; }
+    .topic-score,   .topic-table-header span:last-child   { width: 56px; }
+}

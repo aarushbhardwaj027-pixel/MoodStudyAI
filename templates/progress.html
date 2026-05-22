@@ -3,65 +3,76 @@
 
 <head>
     <title>Progress</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/progress.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/progress.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
     <div class="navbar">
-        <div>
+
+        <div class="navbar-brand">
+            <span class="brand-dot"></span>
             <b>Mood Study AI</b>
         </div>
 
-        <div>
+        <div class="navbar-links">
             <a href="/dashboard">Dashboard</a>
             <a href="/dashboard/analytics">Analytics</a>
-            <a href="/auth/logout">Logout</a>
+            <a href="/auth/logout" class="logout-link">Logout</a>
         </div>
-    </div>
 
+    </div>
 
     <h1>📈 Your Study Progress</h1>
 
-    <div>
+    <div class="container">
 
         <!-- LEFT SIDE -->
-        <div>
+        <div class="left">
 
-            <div>
+            <div class="card fade-up">
                 <h2>Overall Progress</h2>
 
-                <div>
-                    <div style="width: {{ progress_percent }}%;">
+                <div class="progress-bar">
+                    <div class="fill" style="width: {{ progress_percent }}%;">
                         {{ progress_percent }}%
                     </div>
                 </div>
             </div>
 
-            <div>
+            <div class="card fade-up delay-1">
                 <h2>Summary</h2>
+
                 <p>Total Days: {{ total_days }}</p>
                 <p>Completed Days: {{ completed_days }}</p>
             </div>
 
-        </div>
-
-        <!-- RIGHT SIDE -->
-        <div>
-
-            <div>
+            <!-- MOVED GRAPH HERE -->
+            <div class="card fade-up delay-2">
                 <h2>📊 Focus Graph</h2>
+
                 <div class="chart-box">
                     <canvas id="focusChart"></canvas>
                 </div>
             </div>
 
-            <div>
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="right">
+
+            <div class="card table-card fade-up delay-3">
+
                 <h2>📋 Progress Table</h2>
 
-                <table border="1" cellpadding="10">
+                <table>
                     <tr>
                         <th>Day</th>
                         <th>Focus %</th>
@@ -82,7 +93,7 @@
     </div>
 
     <a href="/dashboard">
-        <button>Back</button>
+        <button class="back-btn">Back To Dashboard</button>
     </a>
 
     <script>
@@ -99,19 +110,40 @@
                     label: "Focus %",
                     data: scores,
                     borderColor: "#6366f1",
-                    backgroundColor: "rgba(99,102,241,0.2)",
-                    tension: 0.3,
-                    fill: true
+                    backgroundColor: "rgba(99,102,241,0.15)",
+                    tension: 0.35,
+                    fill: true,
+                    pointRadius: 4,
+                    pointBackgroundColor: "#6366f1"
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // 🔥 THIS IS THE KEY FIX
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: "#374151",
+                            font: {
+                                family: "Plus Jakarta Sans"
+                            }
+                        }
+                    }
+                },
 
                 scales: {
                     y: {
                         beginAtZero: true,
-                        max: 100
+                        max: 100,
+                        grid: {
+                            color: "rgba(0,0,0,0.05)"
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
                     }
                 }
             }

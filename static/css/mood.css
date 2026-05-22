@@ -39,6 +39,24 @@ body {
     background: #f3f4f6;
 }
 
+/* ================= NAVBAR BRAND FONT ================= */
+
+.navbar b,
+nav b {
+    font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    color: #111827;
+}
+
+@media (max-width: 900px) {
+    .navbar b,
+    nav b {
+        font-size: 16px;
+    }
+}
+
 /* ================= MAIN ================= */
 
 .container {
@@ -201,4 +219,143 @@ h2 {
     background: #ffffff;
     border-top: 1px solid #e5e7eb;
     margin-top: auto;
+}
+
+/* ================= GLOBAL DASHBOARD NAVBAR ================= */
+
+.navbar,
+nav {
+    position: sticky;
+    top: 18px;
+    z-index: 1000;
+    width: calc(100% - 48px);
+    margin: 0 auto 28px auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 28px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+.navbar:hover,
+nav:hover {
+    box-shadow: 0 14px 36px rgba(99, 102, 241, 0.12), 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.navbar-brand,
+.navbar > div:first-child,
+nav > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-dot,
+.navbar > div:first-child:not(.navbar-brand)::before {
+    content: "";
+    width: 11px;
+    height: 11px;
+    flex: 0 0 11px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.12), 0 4px 10px rgba(99, 102, 241, 0.25);
+}
+
+.navbar b,
+nav b {
+    font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    color: #111827;
+}
+
+.navbar-links,
+.navbar > div:last-child,
+nav > div:last-child {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.navbar a,
+nav a {
+    position: relative;
+    padding: 10px 16px;
+    border-radius: 12px;
+    color: #4b5563;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.navbar a:hover,
+nav a:hover {
+    background: rgba(99, 102, 241, 0.08);
+    color: #111827;
+    transform: translateY(-1px);
+}
+
+.navbar a::after,
+nav a::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 6px;
+    width: 0;
+    height: 2px;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    transform: translateX(-50%);
+    transition: width 0.25s ease;
+}
+
+.navbar a:hover::after,
+nav a:hover::after {
+    width: 55%;
+}
+
+.logout-link,
+.navbar a[href="/auth/logout"],
+nav a[href="/auth/logout"] {
+    color: #9ca3af !important;
+}
+
+.logout-link:hover,
+.navbar a[href="/auth/logout"]:hover,
+nav a[href="/auth/logout"]:hover {
+    background: #fef2f2 !important;
+    color: #ef4444 !important;
+}
+
+@media (max-width: 900px) {
+    .navbar,
+    nav {
+        top: 10px;
+        width: calc(100% - 24px);
+        padding: 8px 18px;
+        border-radius: 18px;
+    }
+
+    .navbar-links,
+    .navbar > div:last-child,
+    nav > div:last-child {
+        gap: 4px;
+    }
+
+    .navbar a,
+    nav a {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .navbar b,
+    nav b {
+        font-size: 16px;
+    }
 }

@@ -3,7 +3,9 @@
 
 <head>
     <title>Your Study Plan</title>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/study.css') }}">
 </head>
 
@@ -11,19 +13,24 @@
 
     <!-- ================= NAVBAR ================= -->
 
-    <nav>
-        <b>Moody Study AI</b>
-
-        <div>
+    <div class="navbar">
+        <div class="navbar-brand">
+            <span class="brand-dot"></span>
+            <b>Mood Study AI</b>
+        </div>
+        <div class="navbar-links">
             <a href="/dashboard">Dashboard</a>
             <a href="/dashboard/progress">Progress</a>
-            <a href="/auth/logout">Logout</a>
+            <a href="/auth/logout" class="logout-link">Logout</a>
         </div>
-    </nav>
+    </div>
 
     <!-- ================= TITLE ================= -->
 
-    <h2>Your Study Plan 📚</h2>
+    <div class="page-header">
+        <h2>Your Study Plan 📚</h2>
+        <p class="page-sub">Track your progress day by day</p>
+    </div>
 
     <div class="container">
 
@@ -31,58 +38,40 @@
 
         {% for p in plans %}
 
-        <div class="study-card">
+        <div class="study-card {% if p.status == 'done' %}card-done{% endif %}">
 
             <!-- LEFT INFO -->
-
             <div class="study-info">
 
                 <h3>
-                    {% if p.status == "done" %}
-                    ✅
-                    {% else %}
-                    📘
-                    {% endif %}
-
+                    {% if p.status == "done" %}✅{% else %}📘{% endif %}
                     Day {{ p.day_number }}
+                    {% if p.status == "done" %}<span class="done-tag">Completed</span>{% endif %}
                 </h3>
 
                 <div class="topics-list">
-
                     {% for topic in p.topics %}
-
                     <div class="topic-item">
-                        ☑ {{ topic }}
+                        <span class="topic-check">☑</span> {{ topic }}
                     </div>
-
                     {% endfor %}
-
                 </div>
 
             </div>
 
             <!-- RIGHT BUTTON -->
-
             {% if mode == "study" %}
-
             <div class="study-action">
-
                 {% if p.status == "done" %}
-
                 <a href="/dashboard/mood/{{ p.day_number }}">
-                    <button>🔁 Revise</button>
+                    <button class="btn-revise">🔁 Revise</button>
                 </a>
-
                 {% else %}
-
                 <a href="/dashboard/mood/{{ p.day_number }}">
-                    <button>▶ Start Studying</button>
+                    <button class="btn-start">▶ Start Studying</button>
                 </a>
-
                 {% endif %}
-
             </div>
-
             {% endif %}
 
         </div>
@@ -90,20 +79,17 @@
         {% endfor %}
 
         <!-- DELETE BUTTON -->
-
         <form action="/dashboard/delete_plan" method="POST" class="delete-form">
-
-            <button type="submit">
-                Delete Entire Plan 🗑️
-            </button>
-
+            <button type="submit">Delete Entire Plan 🗑️</button>
         </form>
 
         {% else %}
-
-        <p class="empty-text">
-            No study plan found. Upload syllabus first.
-        </p>
+ 
+        <div class="empty-state">
+            <span class="empty-icon">📭</span>
+            <p class="empty-text">No study plan found. Upload your syllabus first.</p>
+            <a href="/dashboard"><button>Go to Dashboard</button></a>
+        </div>
 
         {% endif %}
 

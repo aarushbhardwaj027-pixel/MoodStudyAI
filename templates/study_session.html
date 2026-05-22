@@ -3,27 +3,17 @@
 
 <head>
     <title>Study Session</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/study_session.css') }}">
 </head>
 
 <body>
 
-    <nav class="navbar">
-        <b>Moody Study AI</b>
-
-        <div>
-            <a href="/dashboard">Dashboard</a>
-            <a href="/dashboard/view_plan">Plan</a>
-            <a href="/auth/logout">Logout</a>
-        </div>
-    </nav>
-
     <div class="layout">
 
-        <!-- LEFT SIDE -->
         <div class="left">
 
-            <h2>📚 Study Session - Day {{ day }}</h2>
+            <h2>📚 Study Session — Day {{ day }}</h2>
             <p class="sub">{{ study_mode.message }}</p>
 
             <div class="block">
@@ -37,81 +27,57 @@
             </div>
 
             <div class="block">
-
                 <h3>Today's Checklist</h3>
-
                 <div class="topics">
 
                     {% for topic in study_mode.topics %}
+                    <div class="topic-item" id="topic-item-{{ loop.index0 }}">
 
-                    <label class="topic-item">
-
-                        <input type="checkbox" class="topic-checkbox" onchange="checkAllTopics()">
-
-                        <div class="topic-content">
-
-                            {% if "::" in topic %}
-
-                            {% set parts = topic.split("::") %}
-
-                            <div class="topic-title">
-                                {{ parts[0].strip() }}
+                        <label class="topic-label">
+                            <input type="checkbox" class="topic-checkbox" data-index="{{ loop.index0 }}"
+                                id="checkbox-{{ loop.index0 }}">
+                            <div class="topic-content">
+                                {% if "::" in topic %}
+                                {% set parts = topic.split("::") %}
+                                <div class="topic-title">{{ parts[0].strip() }}</div>
+                                <div class="topic-desc">{{ parts[1].strip() }}</div>
+                                {% else %}
+                                <div class="topic-title">{{ topic }}</div>
+                                {% endif %}
                             </div>
+                            <span class="topic-done-badge" id="badge-{{ loop.index0 }}">✅ Done</span>
+                        </label>
 
-                            <div class="topic-desc">
-                                {{ parts[1].strip() }}
-                            </div>
+                        <div class="tutor-section" id="tutor-{{ loop.index0 }}"></div>
 
-                            {% else %}
-
-                            <div class="topic-title">
-                                {{ topic }}
-                            </div>
-
-                            {% endif %}
-
-                        </div>
-
-                    </label>
-
+                    </div>
                     {% endfor %}
 
                 </div>
-
             </div>
 
-            <!-- SUBMIT -->
             <div class="submit-box">
                 <form action="/dashboard/complete_day/{{ day }}" method="POST">
                     <input type="hidden" name="focus_score" id="focusScoreInput" value="100">
-
-                    <button id="submitBtn" disabled>
-                        ✅ Submit Progress
-                    </button>
                     <input type="hidden" name="pause_count" id="pauseCountInput" value="0">
-
                     <input type="hidden" name="total_pause_time" id="pauseTimeInput" value="0">
-
                     <input type="hidden" name="session_time" id="sessionTimeInput" value="0">
-
                     <input type="hidden" name="max_streak" id="maxStreakInput" value="0">
-
                     <input type="hidden" name="mood" value="{{ mood }}">
+                    <button id="submitBtn" disabled>✅ Submit Progress</button>
                 </form>
             </div>
 
         </div>
 
-        <!-- RIGHT SIDE -->
         <div class="right">
 
             <div class="card timer">
                 <div id="startOverlay" class="overlay">
-                    <h2 id="countdownText">Study session starts in 5</h2>
+                    <span id="countdownText">Study session starts in 5</span>
                 </div>
-                <h3 id="session-type">Study Time</h3>
+                <div id="session-type">Study Time</div>
                 <h1 id="timer">00:00</h1>
-
                 <div class="btns">
                     <button onclick="startTimer()">Start</button>
                     <button onclick="pauseTimer()">Pause</button>
@@ -122,15 +88,13 @@
 
             <div class="card music">
                 <h3>🎧 Music</h3>
-
                 <div class="btn-grid">
                     <button onclick="playMusic('lofi')">Lo-fi</button>
                     <button onclick="playMusic('rain')">Rain</button>
                     <button onclick="playMusic('gamma')">40Hz</button>
                     <button onclick="playMusic('calm')">Calm</button>
-                    <button onclick="stopMusic()">Stop</button>
+                    <button onclick="stopMusic()">Stop ■</button>
                 </div>
-
                 <audio id="bgMusic" loop></audio>
             </div>
 
@@ -138,495 +102,698 @@
 
     </div>
 
-    <!-- ================= AI BUTTON ================= -->
-
-    <div id="aiButton" onclick="toggleAIChat()">
-        🤖
-    </div>
-
-    <!-- ================= AI PANEL ================= -->
+    <div id="aiButton" onclick="toggleAIChat()">🤖</div>
 
     <div id="aiPanel">
-
         <div class="ai-header">
             <h3>Moody AI Assistant</h3>
             <button onclick="toggleAIChat()">✖</button>
         </div>
-
         <div id="aiMessages">
-
             <div class="ai-message bot">
-                Welcome to Day {{ day }} 🚀 <br>
+                Welcome to Day {{ day }} 🚀<br>
                 Ask me anything about today's topics.
             </div>
-
         </div>
-
         <div class="ai-input-box">
-
             <input type="text" id="aiInput" placeholder="Ask your doubt...">
-
-            <button onclick="sendAIMessage()">
-                Send
-            </button>
-
+            <button onclick="sendAIMessage()">Send</button>
         </div>
-
     </div>
 
     <script>
 
         const studyMinutes = parseInt("{{ study_mode.study_time }}");
         const breakMinutes = parseInt("{{ study_mode.break_time }}");
+        const maxCycles = parseInt("{{ study_mode.max_cycles }}");
+        const mood = "{{ mood }}".toLowerCase();
+        const userIntensity = "{{ study_mode.intensity }}";
+        const dayNumber = {{ day }};
+        const allTopics = [{% for topic in study_mode.topics %}"{{ topic }}", {% endfor %}];
+        const totalTopics = allTopics.length;
+        const mcqResults = [];
 
         let timeLeft = studyMinutes * 60;
-
         let timer = null;
         let isBreak = false;
         let isPaused = false;
-
         let currentCycle = 0;
-        let maxCycles = parseInt("{{ study_mode.max_cycles }}");
-
         let pauseCount = 0;
         let totalPauseTime = 0;
         let pauseStart = null;
-
         const sessionStart = Date.now();
-
         let currentStreak = 0;
         let maxStreak = 0;
 
-        // ==============================
-        // DOM ELEMENTS
-        // ==============================
+        let tutorData = null;
+        let tutorLoading = false;
+        const completedTopics = {};
+        const mcqSelections = {};
+
         const timerDisplay = document.getElementById("timer");
         const sessionType = document.getElementById("session-type");
         const musicPlayer = document.getElementById("bgMusic");
 
-        // ==============================
-        // TIMER DISPLAY
-        // ==============================
-        function updateDisplay() {
 
-            const minutes = Math.floor(timeLeft / 60);
-            let seconds = timeLeft % 60;
+        // ── FETCH TUTOR DATA (fires during countdown) ─────────────
 
-            seconds = seconds < 10 ? "0" + seconds : seconds;
-
-            timerDisplay.innerText = `${minutes}:${seconds}`;
+        async function fetchTutorData() {
+            if (tutorLoading) return;
+            tutorLoading = true;
+            try {
+                const res = await fetch("/dashboard/get_tutor_data", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        mood: mood,
+                        topics: allTopics,
+                        intensity: userIntensity,
+                        day: dayNumber
+                    })
+                });
+                tutorData = await res.json();
+                // re-render any tutor sections already open
+                document.querySelectorAll(".tutor-section").forEach((div, index) => {
+                    if (div.style.display === "block") renderTutorContent(index);
+                });
+            } catch (e) {
+                tutorData = { error: true };
+            }
+            tutorLoading = false;
         }
 
-        // ==============================
-        // PAUSE TIMER
-        // ==============================
-        function pauseTimer() {
 
-            if (timer) {
-                clearInterval(timer);
-                timer = null;
+        // ── CHECKBOX LISTENERS ────────────────────────────────────
+
+        function setupCheckboxListeners() {
+            document.querySelectorAll(".topic-checkbox").forEach(function (cb) {
+                cb.addEventListener("change", function () {
+                    const index = parseInt(this.dataset.index);
+                    const tutorDiv = document.getElementById("tutor-" + index);
+                    if (this.checked) {
+                        tutorDiv.style.display = "block";
+                        if (tutorDiv.innerHTML.trim() === "") renderTutorContent(index);
+                        if (!completedTopics[index]) this.checked = false;
+                    } else {
+                        tutorDiv.style.display = "none";
+                    }
+                });
+            });
+        }
+
+
+        // ── RENDER TUTOR CONTENT ──────────────────────────────────
+
+        function renderTutorContent(index) {
+            const tutorDiv = document.getElementById("tutor-" + index);
+
+            if (!tutorData) {
+                tutorDiv.innerHTML = `
+            <p class="tutor-loading">⏳ AI is generating content... please wait</p>
+            <button onclick="fetchTutorData().then(() => renderTutorContent(${index}))"
+                style="margin-top:8px; padding:6px 14px; font-size:0.82rem;">
+                Retry
+            </button>`;
+                return;
+            }
+            if (tutorData.error) {
+                tutorDiv.innerHTML = '<p class="tutor-loading">❌ Could not load. Use AI chat for help!</p>';
+                return;
             }
 
-            isPaused = true;
+            const topicData = tutorData.topics?.[index] || tutorData.topics?.find(t =>
+                t.name?.toLowerCase().includes(allTopics[index].toLowerCase().split("::")[0])
+            );
+            if (!topicData) {
+                tutorDiv.innerHTML = `
+        <p class="tutor-loading">⚠️ AI content missing for this topic.</p>
+        <button onclick="fetchTutorData().then(() => renderTutorContent(${index}))">
+            Retry
+        </button>`;
+                return;
+            }
 
+            // ── MCQ HTML ──
+            let mcqHTML = "";
+            topicData.mcqs.forEach(function (mcq, mcqIndex) {
+                let optionsHTML = "";
+                mcq.options.forEach(function (option, optIndex) {
+                    const letter = String.fromCharCode(65 + optIndex);
+                    optionsHTML += `
+                <label class="mcq-option"
+                    id="opt-${index}-${mcqIndex}-${optIndex}"
+                    data-topic="${index}" data-mcq="${mcqIndex}" data-value="${letter}"
+                    onclick="selectOption(this, ${index}, ${mcqIndex})">
+                    <b>${letter}.</b> ${option}
+                </label>`;
+                });
+                mcqHTML += `
+            <div class="mcq-block">
+                <div class="mcq-question">Q${mcqIndex + 1}. ${mcq.question}</div>
+                ${optionsHTML}
+                <div class="mcq-hint" id="hint-${index}-${mcqIndex}">
+                    💡 Use <b>Moody AI Assistant</b> (🤖) to understand why the correct answer is <b>${mcq.answer}</b>
+                </div>
+            </div>`;
+            });
+
+            // ── RENDER (Q&A placeholder included) ──
+            tutorDiv.innerHTML = `
+        <div class="tutor-explanation">
+            <b>📖 Explanation</b><br><br>${topicData.explanation}
+        </div>
+
+        <div class="tutor-example"><b>💡 Example:</b>\n${topicData.example}</div>
+
+        <div class="qa-section" id="qa-section-${index}">
+            <div class="qa-title">❓ Important Q&A</div>
+            <p class="tutor-loading" id="qa-loading-${index}">⏳ Loading Q&A...</p>
+        </div>
+
+        <div class="mcq-section-title">🧠 Practice MCQs — answer all to complete</div>
+        ${mcqHTML}
+
+        <button class="submit-mcq-btn" id="submit-mcq-${index}"
+            onclick="submitMCQ(${index})" disabled>
+            Submit Answers
+        </button>
+
+        <div class="post-mcq-actions" id="post-actions-${index}">
+            <button class="action-btn btn-more-mcq" onclick="loadMoreMCQs(${index})">
+                ➕ More MCQs
+            </button>
+            <button class="action-btn btn-notes" onclick="saveNotes(${index})">
+                📝 Generate Notes
+            </button>
+        </div>
+
+        <p class="notes-saved-msg" id="notes-msg-${index}">
+            ✅ Notes saved! View in <a href="/dashboard/notes">Notes page</a>.
+        </p>
+
+        <div id="extra-mcqs-${index}"></div>
+    `;
+
+            mcqSelections[index] = {};
+
+            // check if notes already saved for this topic
+            checkNotesExist(index, topicData.name);
+
+            // ── FETCH Q&A separately and inject ──
+            fetchQA(index, topicData.name);
+        }
+        async function saveNotes(index) {
+            const btn = document.querySelector(`#post-actions-${index} .btn-notes`);
+            const msg = document.getElementById("notes-msg-" + index);
+
+            if (!btn || !msg) return;
+
+            const topicName = tutorData?.topics?.[index]?.name || allTopics[index];
+
+            // ── STATE 2: generating ──
+            btn.disabled = true;
+            btn.innerHTML = '<span class="notes-spinner"></span> Generating notes...';
+
+            try {
+                const res = await fetch("/dashboard/save_notes", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        topic: topicName,
+                        day: dayNumber,
+                        intensity: userIntensity,
+                        mood: mood
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.error) {
+                    // ── STATE 4: error ──
+                    btn.disabled = false;
+                    btn.innerHTML = "📝 Generate Notes";
+                    msg.style.background = "#fef2f2";
+                    msg.style.color = "#991b1b";
+                    msg.style.border = "1px solid #fca5a5";
+                    msg.innerHTML = "❌ Failed to generate notes. Try again.";
+                    msg.style.display = "block";
+                    setTimeout(() => { msg.style.display = "none"; msg.style = ""; }, 4000);
+                    return;
+                }
+
+                // ── STATE 3: success ──
+                btn.style.display = "none";
+                msg.innerHTML = '✅ Notes saved!';
+                msg.style.display = "block";
+
+            } catch (e) {
+                // ── STATE 4: network error ──
+                btn.disabled = false;
+                btn.innerHTML = "📝 Generate Notes";
+                msg.style.background = "#fef2f2";
+                msg.style.color = "#991b1b";
+                msg.style.border = "1px solid #fca5a5";
+                msg.innerHTML = "❌ Network error. Try again.";
+                msg.style.display = "block";
+                setTimeout(() => { msg.style.display = "none"; msg.style = ""; }, 4000);
+            }
+        }
+
+        async function fetchQA(index, topicName) {
+            try {
+                const res = await fetch("/dashboard/generate_qa", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ topic: topicName, intensity: userIntensity })
+                });
+                const data = await res.json();
+
+                const section = document.getElementById("qa-section-" + index);
+                if (!section) return;
+
+                if (data.error || !data.qa || data.qa.length === 0) {
+                    section.style.display = "none";
+                    return;
+                }
+
+                let qaHTML = '<div class="qa-title">❓ Important Q&A</div>';
+                data.qa.forEach(function (item) {
+                    qaHTML += `
+                <div class="qa-block">
+                    <div class="qa-question">Q: ${item.question}</div>
+                    <div class="qa-answer">A: ${item.answer}</div>
+                </div>`;
+                });
+
+                section.innerHTML = qaHTML;
+
+            } catch (e) {
+                const section = document.getElementById("qa-section-" + index);
+                if (section) section.style.display = "none";
+            }
+        }
+
+
+        // ── SELECT MCQ OPTION ─────────────────────────────────────
+
+        function selectOption(clicked, topicIndex, mcqIndex) {
+            document.querySelectorAll(`[data-topic="${topicIndex}"][data-mcq="${mcqIndex}"]`).forEach(function (opt) {
+                if (!opt.classList.contains("correct") && !opt.classList.contains("wrong")) {
+                    opt.style.background = "";
+                    opt.style.borderColor = "";
+                }
+            });
+            clicked.style.background = "#ede9fe";
+            clicked.style.borderColor = "#6366f1";
+            if (!mcqSelections[topicIndex]) mcqSelections[topicIndex] = {};
+            mcqSelections[topicIndex][mcqIndex] = clicked.dataset.value;
+            const answered = Object.keys(mcqSelections[topicIndex]).length;
+            const total = tutorData.topics[topicIndex].mcqs.length;
+            if (answered >= total) document.getElementById("submit-mcq-" + topicIndex).disabled = false;
+        }
+
+
+        // ── SUBMIT MCQ ────────────────────────────────────────────
+
+        function submitMCQ(topicIndex) {
+            let correct = 0;
+            let wrong = 0;
+            const mcqs = tutorData.topics[topicIndex].mcqs;
+            const userAnswers = mcqSelections[topicIndex];
+
+            mcqs.forEach(function (mcq, mcqIndex) {
+                if (userAnswers[mcqIndex] === mcq.answer) correct++;
+                else wrong++;
+            });
+
+            mcqResults.push({
+                day: dayNumber,
+                topic: tutorData.topics[topicIndex].name,
+                correct_answers: correct,
+                wrong_answers: wrong,
+                score: Math.round((correct / mcqs.length) * 100),
+                total_questions: mcqs.length,
+                answers_json: JSON.stringify(userAnswers)
+            });
+            mcqs.forEach(function (mcq, mcqIndex) {
+                const correctAns = mcq.answer;
+                const picked = userAnswers[mcqIndex];
+                document.querySelectorAll(`[data-topic="${topicIndex}"][data-mcq="${mcqIndex}"]`).forEach(function (opt) {
+                    opt.style.background = "";
+                    opt.style.borderColor = "";
+                    if (opt.dataset.value === correctAns) opt.classList.add("correct");
+                    if (opt.dataset.value === picked && picked !== correctAns) {
+                        opt.classList.add("wrong");
+                        const hint = document.getElementById("hint-" + topicIndex + "-" + mcqIndex);
+                        if (hint) hint.style.display = "block";
+                    }
+                    opt.style.pointerEvents = "none";
+                });
+            });
+
+            const btn = document.getElementById("submit-mcq-" + topicIndex);
+            btn.disabled = true;
+            btn.innerText = "✅ Submitted";
+
+            document.getElementById("post-actions-" + topicIndex).classList.add("visible");
+
+            completedTopics[topicIndex] = true;
+            document.getElementById("badge-" + topicIndex).style.display = "inline";
+            document.getElementById("checkbox-" + topicIndex).checked = true;
+            checkAllTopicsCompleted();
+        }
+
+
+        // ── LOAD MORE MCQS ────────────────────────────────────────
+
+        async function loadMoreMCQs(index) {
+            const btn = document.querySelector(`#post-actions-${index} .btn-more-mcq`);
+            const container = document.getElementById("extra-mcqs-" + index);
+            const topicName = tutorData.topics[index].name;
+
+            btn.disabled = true;
+            btn.innerText = "⏳ Loading...";
+            container.innerHTML = "";
+
+            try {
+                const res = await fetch("/dashboard/generate_more_mcqs", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ topic: topicName, intensity: userIntensity })
+                });
+                const data = await res.json();
+
+                if (data.error || !data.mcqs) {
+                    container.innerHTML = '<p class="tutor-loading">❌ Could not load more MCQs.</p>';
+                    btn.disabled = false;
+                    btn.innerText = "➕ More MCQs";
+                    return;
+                }
+
+                let html = '<div class="extra-mcqs"><div class="extra-mcqs-title">🧠 Extra Practice</div>';
+
+                data.mcqs.forEach(function (mcq, mcqIndex) {
+                    let optionsHTML = "";
+                    mcq.options.forEach(function (option, optIndex) {
+                        const letter = String.fromCharCode(65 + optIndex);
+                        optionsHTML += `
+                            <label class="mcq-option"
+                                data-etopic="${index}" data-emcq="${mcqIndex}" data-value="${letter}"
+                                onclick="selectExtraOption(this, ${index}, ${mcqIndex}, '${mcq.answer}')">
+                                <b>${letter}.</b> ${option}
+                            </label>`;
+                    });
+                    html += `
+                        <div class="mcq-block">
+                            <div class="mcq-question">Q${mcqIndex + 1}. ${mcq.question}</div>
+                            ${optionsHTML}
+                        </div>`;
+                });
+
+                html += '</div>';
+                container.innerHTML = html;
+                btn.innerText = "🔄 Load More";
+                btn.disabled = false;
+
+            } catch (e) {
+                container.innerHTML = '<p class="tutor-loading">❌ Error loading MCQs.</p>';
+                btn.disabled = false;
+                btn.innerText = "➕ More MCQs";
+            }
+        }
+
+
+        // ── SELECT EXTRA OPTION (instant feedback) ────────────────
+
+        function selectExtraOption(clicked, topicIndex, mcqIndex, correctAnswer) {
+            document.querySelectorAll(`[data-etopic="${topicIndex}"][data-emcq="${mcqIndex}"]`).forEach(function (opt) {
+                opt.style.pointerEvents = "none";
+                opt.style.background = "";
+                opt.style.borderColor = "";
+                if (opt.dataset.value === correctAnswer) opt.classList.add("correct");
+                if (opt.dataset.value === clicked.dataset.value && clicked.dataset.value !== correctAnswer)
+                    opt.classList.add("wrong");
+            });
+        }
+
+
+        // ── SAVE NOTES ────────────────────────────────────────────
+
+        // ── CHECK IF NOTES EXIST FOR TOPIC ────────────────────────
+        const notesExistCache = {};  // track per topic index
+
+        async function checkNotesExist(index, topicName) {
+            try {
+                const res = await fetch("/dashboard/notes_exist", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ topic: topicName, day: dayNumber })
+                });
+                const data = await res.json();
+                notesExistCache[index] = data.exists;
+
+                // hide the notes button if notes already exist
+                if (data.exists) {
+                    const btn = document.querySelector(`#post-actions-${index} .btn-notes`);
+                    if (btn) {
+                        btn.style.display = "none";
+                    }
+                    const msg = document.getElementById("notes-msg-" + index);
+                    if (msg) {
+                        msg.innerHTML = '✅ Notes already saved! View in <a href="/dashboard/notes">Notes page</a>.';
+                        msg.style.display = "block";
+                    }
+                }
+            } catch (e) {
+                // fail silently, show button by default
+            }
+        }
+
+        // ── CHECK ALL TOPICS DONE ────────────────────────────────
+
+        function checkAllTopicsCompleted() {
+            const done = Object.keys(completedTopics).length;
+            const submitBtn = document.getElementById("submitBtn");
+            if (done >= totalTopics) {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "✅ Submit Progress";
+            } else {
+                submitBtn.innerText = `Complete ${totalTopics - done} more topic(s) to submit`;
+            }
+        }
+
+
+        // ── TIMER ─────────────────────────────────────────────────
+
+        function updateDisplay() {
+            const m = Math.floor(timeLeft / 60);
+            const s = (timeLeft % 60) < 10 ? "0" + (timeLeft % 60) : (timeLeft % 60);
+            timerDisplay.innerText = `${m}:${s}`;
+        }
+
+        function pauseTimer() {
+            if (timer) { clearInterval(timer); timer = null; }
+            isPaused = true;
             pauseCount++;
             pauseStart = Date.now();
-
             document.getElementById("pauseCountInput").value = pauseCount;
-
         }
 
-        // ==============================
-        // RESUME TIMER
-        // ==============================
         function resumeTimer() {
-
             isPaused = false;
-
             if (pauseStart) {
-
-                const pausedSeconds =
-                    Math.floor((Date.now() - pauseStart) / 1000);
-
-                totalPauseTime += pausedSeconds;
-
-                document.getElementById("pauseTimeInput").value =
-                    totalPauseTime;
-
+                totalPauseTime += Math.floor((Date.now() - pauseStart) / 1000);
+                document.getElementById("pauseTimeInput").value = totalPauseTime;
                 pauseStart = null;
             }
-
             startTimer();
         }
 
-        // ==============================
-        // START TIMER
-        // ==============================
         function startTimer() {
-
             if (timer) return;
-
             timer = setInterval(() => {
-
                 if (isPaused) return;
-
                 if (timeLeft > 0) {
-
                     timeLeft--;
                     updateDisplay();
-
                     currentStreak++;
-
                     if (currentStreak > maxStreak) {
                         maxStreak = currentStreak;
                         document.getElementById("maxStreakInput").value = maxStreak;
                     }
-
                     return;
                 }
-
-                clearInterval(timer);
-                timer = null;
-
+                clearInterval(timer); timer = null;
                 handleSessionSwitch();
-
             }, 1000);
         }
 
-        // ==============================
-        // HANDLE SESSION SWITCH
-        // ==============================
-        function handleSessionSwitch() {
-
+        async function handleSessionSwitch() {
             if (!isBreak) {
-
-                // STUDY → BREAK
                 isBreak = true;
-
                 sessionType.innerText = "Break Time";
-
-                alert("Study session complete! Time for break 😌");
-
+                alert("Study session complete! Time for a break 😌");
                 timeLeft = breakMinutes * 60;
-            }
-
-            else {
-
-                // BREAK → STUDY
+            } else {
                 isBreak = false;
-
                 sessionType.innerText = "Study Time";
-
                 currentCycle++;
-
-                // 🔥 STOP CONDITION
                 if (currentCycle >= maxCycles) {
-
                     alert("All cycles completed 🎯 Great job!");
-
-                    stopTimer();
+                    clearInterval(timer); timer = null;
+                    await flushMCQResults();
                     document.querySelector("form").submit();
                     return;
                 }
-
                 alert("Break finished! Back to study 💪");
-
                 timeLeft = studyMinutes * 60;
             }
-
             updateDisplay();
             startTimer();
         }
 
-        // ==============================
-        // STOP TIMER
-        // ==============================
-        function stopTimer() {
-
-            const confirmExit = confirm("Are you sure? Session will end early.");
-            if (!confirmExit) return;
-
-            clearInterval(timer);
-            timer = null;
-
-            // flush pause time if pending
+        async function stopTimer() {
+            if (!confirm("Are you sure? Session will end early.")) return;
+            clearInterval(timer); timer = null;
             if (pauseStart) {
-                const pausedSeconds = Math.floor((Date.now() - pauseStart) / 1000);
-                totalPauseTime += pausedSeconds;
+                totalPauseTime += Math.floor((Date.now() - pauseStart) / 1000);
                 document.getElementById("pauseTimeInput").value = totalPauseTime;
                 pauseStart = null;
-
-                if (pauseStart) {
-                    const pausedSeconds =
-                        Math.floor((Date.now() - pauseStart) / 1000);
-
-                    totalPauseTime += pausedSeconds;
-
-                    document.getElementById("pauseTimeInput").value =
-                        totalPauseTime;
-
-                    pauseStart = null;
-                }
             }
-
-
             const totalStudySeconds = studyMinutes * 60;
             const studiedSeconds = totalStudySeconds - timeLeft;
-            const studiedPercent = (studiedSeconds / totalStudySeconds) * 100;
-
-            // FIXED SESSION TIME (REAL VALUE)
-            const totalSession =
-                Math.floor((Date.now() - sessionStart) / 1000);
-
+            const totalSession = Math.floor((Date.now() - sessionStart) / 1000);
             document.getElementById("sessionTimeInput").value = totalSession;
 
-            if (studiedPercent < 50) {
+            await flushMCQResults();
+
+            if ((studiedSeconds / totalStudySeconds) * 100 < 50) {
                 alert("Study session incomplete ❌");
                 window.location.href = "/dashboard/view_plan?mode=study";
                 return;
             }
-
-            document.getElementById("focusScoreInput").value =
-                Math.max(40, focusScore);
-
             document.querySelector("form").submit();
         }
 
-        // ==============================
-        // MUSIC SYSTEM
-        // ==============================
-        function playMusic(type) {
+        async function flushMCQResults() {
+            if (mcqResults.length === 0) return;
 
+            const submitBtn = document.getElementById("submitBtn");
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerText = "💾 Saving results...";
+            }
+
+            for (const result of mcqResults) {
+                try {
+                    await fetch("/dashboard/save_ai_test", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(result)
+                    });
+                } catch (e) {
+                    console.error("Failed to save MCQ result:", e);
+                }
+            }
+        }
+
+
+        // ── MUSIC ─────────────────────────────────────────────────
+
+        function playMusic(type) {
             const tracks = {
                 lofi: "/static/music/lofi.m4a",
                 rain: "/static/music/rain.m4a",
                 gamma: "/static/music/gamma.m4a",
                 calm: "/static/music/calm.m4a"
             };
-
             musicPlayer.src = tracks[type] || tracks.lofi;
-
             musicPlayer.volume = 0.2;
-
             musicPlayer.play();
         }
 
-        function stopMusic() {
-            musicPlayer.pause();
-        }
-
-        // ==============================
-        // AUTO PLAY MUSIC BASED ON MOOD
-        // ==============================
-        const mood = "{{ mood }}".toLowerCase();
+        function stopMusic() { musicPlayer.pause(); }
 
         function autoPlayMoodMusic() {
-
-            const safeMood = (mood || "").toLowerCase();
-
-            if (["happy", "excited", "good"].includes(safeMood)) {
-                playMusic("gamma");
-            }
-
-            else if (["normal", "okay", "fine"].includes(safeMood)) {
-                playMusic("lofi");
-            }
-
-            else if (["sad", "low", "tired"].includes(safeMood)) {
-                playMusic("calm");
-            }
-
-            else if (["angry", "stressed", "anxious"].includes(safeMood)) {
-                playMusic("rain");
-            }
-
-            else {
-                playMusic("lofi");
-            }
+            const m = mood.toLowerCase();
+            if (["happy", "excited", "good"].includes(m)) playMusic("gamma");
+            else if (["normal", "okay", "fine"].includes(m)) playMusic("lofi");
+            else if (["sad", "low", "tired"].includes(m)) playMusic("calm");
+            else if (["angry", "stressed", "anxious"].includes(m)) playMusic("rain");
+            else playMusic("lofi");
         }
-        // ==============================
-        // START COUNTDOWN OVERLAY
-        // ==============================
-        function startCountdownAndBegin() {
 
+
+        // ── COUNTDOWN ─────────────────────────────────────────────
+
+        function startCountdownAndBegin() {
             const overlay = document.getElementById("startOverlay");
             const text = document.getElementById("countdownText");
-
-            let count = 5;
-            let started = false;
-
+            let count = 5, started = false;
             overlay.style.display = "flex";
             text.innerText = `Study session starts in ${count}`;
-
             const interval = setInterval(() => {
-
                 count--;
-
-                if (count > 0) {
-                    text.innerText = `Study session starts in ${count}`;
-                    return;
-                }
-
+                if (count > 0) { text.innerText = `Study session starts in ${count}`; return; }
                 clearInterval(interval);
                 overlay.style.display = "none";
-
-                if (!started) {
-                    started = true;
-                    startTimer();
-                }
-
+                if (!started) { started = true; startTimer(); }
             }, 1000);
         }
 
-        // ==============================
-        // TOPIC CHECKBOX VALIDATION
-        // ==============================
-        function updateSubmitState() {
 
-            const checkboxes =
-                document.querySelectorAll(".topic-checkbox");
+        // ── AI CHAT ───────────────────────────────────────────────
 
-            const submitBtn =
-                document.getElementById("submitBtn");
-
-            const allChecked =
-                [...checkboxes].every(box => box.checked);
-
-            submitBtn.disabled = !allChecked;
-        }
-
-
-        // ==============================
-        // AI CHAT TOGGLE
-        // ==============================
         function toggleAIChat() {
-
-            const panel =
-                document.getElementById("aiPanel");
-
-            panel.style.display =
-                panel.style.display === "flex"
-                    ? "none"
-                    : "flex";
+            const panel = document.getElementById("aiPanel");
+            panel.style.display = panel.style.display === "flex" ? "none" : "flex";
         }
 
-        // ==============================
-        // SEND MESSAGE TO AI
-        // ==============================
         async function sendAIMessage() {
-
-            const input =
-                document.getElementById("aiInput");
-
-            const message =
-                input.value.trim();
-
-            if (message === "") return;
-
-            const messagesBox =
-                document.getElementById("aiMessages");
-
-            // USER MESSAGE
-            messagesBox.innerHTML += `
-            <div class="ai-message user">
-                ${message}
-            </div>
-        `;
-
+            const input = document.getElementById("aiInput");
+            const message = input.value.trim();
+            if (!message) return;
+            const box = document.getElementById("aiMessages");
+            box.innerHTML += `<div class="ai-message user">${message}</div>`;
             input.value = "";
-
-            messagesBox.scrollTop =
-                messagesBox.scrollHeight;
-
-            // TYPING INDICATOR
-            messagesBox.innerHTML += `
-            <div class="ai-message bot" id="typing">
-                Typing...
-            </div>
-        `;
-
+            box.scrollTop = box.scrollHeight;
+            box.innerHTML += `<div class="ai-message bot" id="typing">Typing...</div>`;
             try {
-
-                const response =
-                    await fetch("/dashboard/ask_ai", {
-
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-
-                        body: JSON.stringify({
-                            message: message,
-                            day: "{{ day }}"
-                        })
-                    });
-
-                const data = await response.json();
-
+                const res = await fetch("/dashboard/ask_ai", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message, day: "{{ day }}" })
+                });
+                const data = await res.json();
                 document.getElementById("typing").remove();
-
-                // BOT RESPONSE
-                messagesBox.innerHTML += `
-                <div class="ai-message bot">
-                    ${data.reply}
-                </div>
-            `;
-
-                messagesBox.scrollTop =
-                    messagesBox.scrollHeight;
-            }
-
-            catch (error) {
-
+                box.innerHTML += `<div class="ai-message bot">${data.reply}</div>`;
+                box.scrollTop = box.scrollHeight;
+            } catch {
                 document.getElementById("typing").remove();
-
-                messagesBox.innerHTML += `
-                <div class="ai-message bot">
-                    AI is currently unavailable.
-                </div>
-            `;
+                box.innerHTML += `<div class="ai-message bot">AI is currently unavailable.</div>`;
             }
         }
 
-        // ==============================
-        // INITIALIZATION
-        // ==============================
+
+        // ── INIT ──────────────────────────────────────────────────
+
         document.addEventListener("DOMContentLoaded", () => {
-
-            // Checkbox listeners
-            const checkboxes =
-                document.querySelectorAll(".topic-checkbox");
-
-            checkboxes.forEach(box => {
-                box.addEventListener(
-                    "change",
-                    updateSubmitState
-                );
-            });
-
-            // Initial button state
-            updateSubmitState();
-
-            // Auto music
+            setupCheckboxListeners();
+            fetchTutorData();
             autoPlayMoodMusic();
-
-            // Start countdown
             startCountdownAndBegin();
-
-            // Save session time
-            const totalSession =
-                Math.floor(
-                    (Date.now() - sessionStart) / 1000
-                );
-
+            checkAllTopicsCompleted();
             document.getElementById("sessionTimeInput").value =
-                totalSession;
+                Math.floor((Date.now() - sessionStart) / 1000);
+
+            document.getElementById("submitBtn").addEventListener("click", async function (e) {
+                e.preventDefault();
+                await flushMCQResults();
+                document.querySelector("form").submit();
+            });
         });
 
     </script>
-
-
 
 </body>
 

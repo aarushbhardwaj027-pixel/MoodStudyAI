@@ -3,23 +3,26 @@
 
 <head>
   <title>Signup - Moody Study AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
 </head>
 
 <body>
 
   <!-- NAVBAR -->
-  <nav>
-    <b>Moody Study AI</b>
-
-    <div>
-        <a href="/">Home</a>
-        <a href="/auth/login">Login</a>
-        <a href="/auth/signup">Signup</a>
+  <div class="navbar">
+    <div class="navbar-brand">
+      <span class="brand-dot"></span>
+      <b>Mood Study AI</b>
     </div>
-</nav>
+    <div class="navbar-links">
+      <a href="/">Home</a>
+      <a href="/auth/login">Log In</a>
+      <a href="/auth/logout" class="logout-link">Logout</a>
+    </div>
+  </div>
 
-  <hr>
+
 
   <h2>Create Account</h2>
 

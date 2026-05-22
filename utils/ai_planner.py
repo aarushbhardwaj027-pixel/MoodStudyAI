@@ -4,28 +4,29 @@ from openai import OpenAI
 
 load_dotenv()
 
-api_key = os.getenv("OPENROUTER_API_KEY")
-
-if not api_key:
-    raise Exception("API key not found. Check .env file")
-
 client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=api_key,
+    base_url="https://api.groq.com/openai/v1",
+    api_key=os.getenv("GROQ_API_KEY")
 )
 
-def generate_plan(syllabus_text, days=30):
+def generate_plan(syllabus_text, days):
 
     prompt = f"""
 You are an expert AI study planner.
 
 Your job:
-- Divide syllabus into {days} study days
+- Divide syllabus into {days} study days only no random number of days only given days
 - Create SMALL detailed subtopics
 - Arrange from easy → difficult
-- Keep topics beginner friendly
+- Keep topics beginner friendly but detailed
 - Each topic should feel like a checklist item
 - Add a short one-line explanation
+- Also make sure you names topics nicley for eg: if a user uplaoded python syllabus
+  you divide syllabus in parts and name topics like varibale,operators they are not detailed
+  nicley even c++ and js have variables but we are doing python so name topic like Python-Variable 
+  to make it simple, no need to do everywhere only that places where there is mutliple subjects
+  having same topics like if we r doing c++ and topic is pointer only c++ and c has pointers 
+  but still write c++ - pointer to make it clear
 
 STRICT OUTPUT FORMAT:
 
@@ -51,14 +52,15 @@ Syllabus:
 """
 
     response = client.chat.completions.create(
-        model="meta-llama/llama-3-8b-instruct",
+        model="llama-3.1-8b-instant",
         messages=[
             {
                 "role": "user",
                 "content": prompt
             }
         ],
-        temperature=0.5
+        temperature=0.5,
+        max_tokens=4000
     )
 
     plan_text = response.choices[0].message.content
@@ -74,7 +76,6 @@ Syllabus:
 
         if line.startswith("Day"):
 
-            # save previous day
             if current_day is not None:
 
                 plan.append({
@@ -82,7 +83,6 @@ Syllabus:
                     "topics": current_topics
                 })
 
-            # start new day
             try:
                 current_day = int(
                     line.replace("Day", "").strip()
@@ -99,7 +99,6 @@ Syllabus:
 
             current_topics.append(topic)
 
-    # save last day
     if current_day is not None:
 
         plan.append({

@@ -4,14 +4,9 @@ from openai import OpenAI
 
 load_dotenv()
 
-api_key = os.getenv("OPENROUTER_API_KEY")
-
-if not api_key:
-    raise Exception("API key not found")
-
 client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=api_key
+    base_url="https://api.groq.com/openai/v1",
+    api_key=os.getenv("GROQ_API_KEY")
 )
 
 # ========================= WELCOME MESSAGE =========================
@@ -101,7 +96,7 @@ def ask_study_ai(day, topics, question):
         try:
 
             response = client.chat.completions.create(
-                model="meta-llama/llama-3-8b-instruct",
+                model="llama-3.1-8b-instant",
 
                 messages=[
                     {
