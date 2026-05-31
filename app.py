@@ -1,8 +1,11 @@
-from flask import Flask, session, render_template, request, redirect
+from flask import Flask, session, render_template, redirect
 from auth.routes import auth_bp
 from dashboard.routes import dashboard_bp
 from extensions import db
 import os
+
+# IMPORTANT: import models BEFORE create_all()
+from models.user_model import User
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY')
@@ -19,6 +22,8 @@ db.init_app(app)
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
 
+with app.app_context():
+    db.create_all()
 
 @app.route('/')
 def home():
@@ -26,9 +31,5 @@ def home():
         return redirect('/dashboard')
     return render_template('index.html')
 
-
-def create_app():
-    with app.app_context():
-        db.create_all()
-
-    return app
+if __name__ == "__main__":
+    app.run(debug=True)
