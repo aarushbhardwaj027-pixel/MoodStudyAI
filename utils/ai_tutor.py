@@ -159,7 +159,8 @@ def generate_ai_tutor_content(mood, topics, intensity):
     cleaned_topics = []
     for t in topics:
         if "::" in t:
-            cleaned_topics.append(t.split("::")[1].strip())
+            parts = t.split("::")
+            cleaned_topics.append(f"{parts[0].strip()} - {parts[1].strip()}")
         else:
             cleaned_topics.append(t.strip())
 
